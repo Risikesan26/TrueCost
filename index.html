@@ -92,8 +92,8 @@
   .nav-step.done:hover { color: var(--text); }
 
   /* ===== COMMON ===== */
-  .container { max-width: 1000px; margin: 0 auto; padding: 0 2rem; }
-  .container-wide { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+  .container { max-width: 1000px; margin: 0 auto; padding: 0 clamp(1rem, 3vw, 2rem); }
+  .container-wide { max-width: 1160px; margin: 0 auto; padding: 0 clamp(1rem, 3vw, 2rem); }
   .pt-nav { padding-top: 56px; }
 
   .label {
@@ -365,7 +365,7 @@
 
   /* Hidden cost section */
   .hidden-costs {
-    padding: 6rem 0;
+    padding: clamp(3rem, 6vw, 6rem) 0;
     border-bottom: 1px solid var(--border);
   }
   .cost-grid {
@@ -408,7 +408,7 @@
 
   /* Example section */
   .example-section {
-    padding: 6rem 0;
+    padding: clamp(3rem, 6vw, 6rem) 0;
     border-bottom: 1px solid var(--border);
   }
   .example-table {
@@ -441,7 +441,7 @@
 
   /* Steps section */
   .steps-section {
-    padding: 6rem 0;
+    padding: clamp(3rem, 6vw, 6rem) 0;
   }
   .steps-grid {
     display: grid;
@@ -498,7 +498,7 @@
   .page-desc { font-size: 0.9rem; color: var(--text-dim); max-width: 500px; line-height: 1.6; }
 
   .form-section {
-    padding: 3rem 0;
+    padding: 2rem 0;
   }
   .form-section-title {
     font-family: var(--mono);
@@ -615,31 +615,39 @@
     border-bottom: 1px solid var(--border);
     font-size: 4rem;
   }
-  .car-info { padding: 1.25rem; }
+  .car-info { padding: 1.25rem 1.25rem 0.75rem; }
   .car-name {
-    font-family: var(--serif);
+    font-family: var(--sans);
     font-size: 1rem;
-    margin-bottom: 0.3rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-bottom: 0.2rem;
+    color: var(--text);
   }
   .car-meta {
-    font-family: var(--mono);
-    font-size: 0.65rem;
+    font-family: var(--sans);
+    font-size: 0.72rem;
     color: var(--text-dim);
-    letter-spacing: 0.05em;
     margin-bottom: 0.75rem;
+    font-weight: 400;
   }
   .car-price {
     font-family: var(--mono);
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     color: var(--gold);
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.6rem;
+    font-weight: 500;
   }
   .car-specs {
-    display: flex; gap: 1rem;
-    font-family: var(--mono);
-    font-size: 0.65rem;
-    color: var(--text-dim);
+    display: flex; gap: 0.75rem;
+    font-family: var(--sans);
+    font-size: 0.7rem;
+    color: var(--text-faint);
     flex-wrap: wrap;
+    line-height: 1.4;
+  }
+  .car-specs span {
+    display: flex; align-items: center; gap: 0.25rem;
   }
   .car-actions {
     padding: 0 1.25rem 1.25rem;
@@ -954,7 +962,27 @@
     margin-top: 3rem;
   }
 
+  /* Loan term toggle buttons */
+  .loan-term-btn {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.06em;
+    padding: 0.3rem 0.7rem;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .loan-term-btn:hover { border-color: var(--gold-dim); color: var(--gold); }
+  .loan-term-btn.active { border-color: var(--gold); color: var(--gold); background: rgba(201,168,76,0.08); }
+
   /* Responsive */
+  @media (max-width: 1024px) {
+    .cars-grid { grid-template-columns: repeat(2, 1fr); }
+    .scenarios-grid { grid-template-columns: repeat(2, 1fr); }
+    .cost-grid { grid-template-columns: repeat(2, 1fr); }
+  }
   @media (max-width: 768px) {
     .grid-2, .grid-3 { grid-template-columns: 1fr; }
     .cost-grid { grid-template-columns: 1fr 1fr; }
@@ -966,10 +994,20 @@
     .cost-breakdown-grid { grid-template-columns: 1fr; }
     .nav-steps { display: none; }
     .hero-headline { font-size: 2.2rem; }
+    .landing-hero { padding-bottom: 3rem; }
+    .page-header { padding: 2.5rem 0 2rem; }
+    .bottom-nav { padding: 1.25rem 0 2rem; margin-top: 2rem; }
+    .form-section { padding: 1.5rem 0; }
+    .total-bar { flex-direction: column; gap: 1.5rem; align-items: flex-start; }
   }
   @media (max-width: 520px) {
     .cars-grid { grid-template-columns: 1fr; }
     .cost-grid { grid-template-columns: 1fr; }
+    .cost-breakdown-grid { grid-template-columns: 1fr; }
+    .grid-3 { grid-template-columns: 1fr; }
+    .hero-headline { font-size: 1.9rem; }
+    .big-number { font-size: 1.8rem; }
+    .container, .container-wide { padding: 0 1rem; }
   }
 </style>
 </head>
@@ -1253,13 +1291,32 @@
             <span class="result-label">Safe Car Budget (monthly)</span>
             <span class="result-value text-gold" id="res-budget">RM —</span>
           </div>
+
+          <!-- Loan term toggle -->
+          <div style="padding:0.75rem 0;border-bottom:1px solid var(--border)">
+            <div style="font-family:var(--mono);font-size:0.6rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-faint);margin-bottom:0.5rem">Loan Term</div>
+            <div style="display:flex;gap:0.4rem">
+              <button class="loan-term-btn" id="lt-5" onclick="setLoanTerm(5,this)">5 yrs</button>
+              <button class="loan-term-btn active" id="lt-7" onclick="setLoanTerm(7,this)">7 yrs</button>
+              <button class="loan-term-btn" id="lt-9" onclick="setLoanTerm(9,this)">9 yrs</button>
+            </div>
+          </div>
+
           <div class="result-row">
-            <span class="result-label">Max Recommended Car Price</span>
+            <span class="result-label">Max Car Price (<span id="term-label">7yr</span>)</span>
             <span class="result-value" id="res-maxprice">RM —</span>
           </div>
           <div class="result-row">
             <span class="result-label">Disposable Income</span>
             <span class="result-value" id="res-disposable">RM —</span>
+          </div>
+          <div class="result-row">
+            <span class="result-label">After-Car Remaining</span>
+            <span class="result-value" id="res-remaining">RM —</span>
+          </div>
+          <div class="result-row">
+            <span class="result-label">Emergency Fund Status</span>
+            <span class="result-value" id="res-emergency-status">—</span>
           </div>
           <div class="result-row">
             <span class="result-label">Debt-to-Income Ratio</span>
@@ -1520,59 +1577,100 @@
     <div class="page-header">
       <div class="page-num">Step 06 of 06</div>
       <h1 class="page-title">AI Financial Advisor</h1>
-      <p class="page-desc">Ask anything about your car purchase. The AI has full context of your finances and the vehicle you selected.</p>
-      <div style="margin-top:1.25rem;display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap">
-        <div style="position:relative;display:flex;align-items:center;flex:1;max-width:440px">
-          
+      <p class="page-desc">Personalised AI analysis of your car purchase decision — affordability, risks, and smarter alternatives.</p>
     </div>
 
-    <div class="ai-chat-wrap">
-      <!-- Chat panel -->
-      <div class="ai-panel">
-        <div class="ai-panel-header">
-          <div class="ai-pulse"></div>
-          <span class="ai-panel-title">TrueCost AI — Connected</span>
-        </div>
-        <div class="ai-messages" id="ai-messages">
-          <div class="msg msg-ai">
-            <div class="msg-label">TrueCost AI</div>
-            <div class="msg-bubble">
-              Hello. I've reviewed your financial profile and the vehicle you selected. I'm ready to give you an honest analysis. What would you like to understand?
-            </div>
-          </div>
-        </div>
-        <div class="ai-input-row">
-          <input type="text" class="ai-input" id="ai-input" placeholder="Ask anything about your car decision..." onkeydown="if(event.key==='Enter')sendAI()">
-          <button class="ai-send-btn" id="ai-send-btn" onclick="sendAI()">Send</button>
+    <!-- ── SECTION A: Auto-generated Financial Analysis ── -->
+    <div style="margin-top:2rem">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1rem">
+        <div class="label">AI Financial Analysis</div>
+        <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap">
+          <button class="btn-primary" id="btn-analyze" onclick="runFullAnalysis()" style="padding:0.6rem 1.2rem;font-size:0.68rem">
+            ⚡ Generate Analysis
+          </button>
         </div>
       </div>
 
-      <!-- Insight cards -->
-      <div class="insights-sidebar" id="insights-sidebar">
-        <div class="insight-card info">
-          <div class="insight-tag">📊 Summary</div>
-          <div class="insight-text" id="insight-summary">Complete steps 2–4 first to unlock your personalised insights.</div>
+      <!-- Analysis output panel -->
+      <div id="analysis-panel" style="background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--gold);padding:1.75rem;min-height:120px;position:relative">
+        <div id="analysis-placeholder" style="display:flex;align-items:center;gap:1rem">
+          <div style="font-size:2rem">🤖</div>
+          <div>
+            <div style="font-family:var(--mono);font-size:0.75rem;color:var(--text-dim)">Waiting for analysis...</div>
+            <div style="font-size:0.78rem;color:var(--text-faint);margin-top:0.25rem">Enter your Groq API key and click Generate Analysis to get your personalised financial report.</div>
+          </div>
         </div>
-        <div class="insight-card caution">
-          <div class="insight-tag">⚠️ Risk Factor</div>
-          <div class="insight-text" id="insight-risk">Your risk assessment will appear here once your data is entered.</div>
+        <div id="analysis-loading" style="display:none;align-items:center;gap:0.75rem">
+          <div class="typing-dots"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>
+          <span style="font-family:var(--mono);font-size:0.7rem;color:var(--text-dim)">AI is analysing your financial profile...</span>
         </div>
-        <div class="insight-card positive">
-          <div class="insight-tag">✅ Better Path</div>
-          <div class="insight-text" id="insight-better">Alternative recommendations will appear after analysis.</div>
+        <div id="analysis-content" style="display:none">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem" id="analysis-cards"></div>
+          <div id="analysis-verdict" style="font-size:0.88rem;line-height:1.75;color:var(--text)"></div>
         </div>
-        <div class="insight-card warning">
-          <div class="insight-tag">🚨 Key Warning</div>
-          <div class="insight-text" id="insight-warning">Personalised warnings will appear once data is complete.</div>
+      </div>
+    </div>
+
+    <!-- ── SECTION B: AI Car Recommendations ── -->
+    <div style="margin-top:2.5rem">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1rem">
+        <div>
+          <div class="label">AI Car Recommendation Engine</div>
+          <div style="font-size:0.8rem;color:var(--text-dim);margin-top:0.3rem">Financially safer alternatives based on your budget and income</div>
+        </div>
+        <button class="btn-secondary" id="btn-recommend" onclick="runRecommendations()" style="padding:0.6rem 1.2rem;font-size:0.68rem">
+          🚗 Get Recommendations
+        </button>
+      </div>
+
+      <div id="reco-loading" style="display:none;padding:1.5rem;background:var(--surface);border:1px solid var(--border);align-items:center;gap:0.75rem">
+        <div class="typing-dots"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>
+        <span style="font-family:var(--mono);font-size:0.7rem;color:var(--text-dim)">AI is finding smarter alternatives...</span>
+      </div>
+
+      <div id="reco-cards" style="display:none;gap:1px;background:var(--border)" class="grid-3"></div>
+
+      <div id="reco-placeholder" style="background:var(--surface);border:1px solid var(--border);padding:1.5rem;display:flex;align-items:center;gap:1rem">
+        <div style="font-size:1.8rem">🔍</div>
+        <div style="font-size:0.8rem;color:var(--text-dim);line-height:1.5">Click <strong style="color:var(--text)">Get Recommendations</strong> to see 3 AI-suggested cars that better match your financial profile, with reasoning for each choice.</div>
+      </div>
+    </div>
+
+    <!-- ── SECTION C: AI Chat ── -->
+    <div style="margin-top:2.5rem">
+      <div class="label" style="margin-bottom:1rem">Ask the AI Advisor</div>
+      <div class="ai-chat-wrap" style="height:auto">
+        <div class="ai-panel" style="height:440px">
+          <div class="ai-panel-header">
+            <div class="ai-pulse"></div>
+            <span class="ai-panel-title">TrueCost AI — Chat</span>
+          </div>
+          <div class="ai-messages" id="ai-messages">
+            <div class="msg msg-ai">
+              <div class="msg-label">TrueCost AI</div>
+              <div class="msg-bubble">Hello. I have your full financial profile loaded. Run the analysis above first, then ask me anything about your car decision — I'll give you an honest answer.</div>
+            </div>
+          </div>
+          <div class="ai-input-row">
+            <input type="text" class="ai-input" id="ai-input" placeholder="Ask anything about your car decision..." onkeydown="if(event.key==='Enter')sendAI()">
+            <button class="ai-send-btn" id="ai-send-btn" onclick="sendAI()">Send</button>
+          </div>
         </div>
 
-        <div style="margin-top:0.5rem">
+        <div class="insights-sidebar">
           <div class="label" style="margin-bottom:0.75rem">Quick Questions</div>
           <div style="display:flex;flex-direction:column;gap:0.4rem">
-            <button class="btn-ghost" style="text-align:left;font-size:0.65rem" onclick="quickQuestion('Can I actually afford this car based on my income?')">Can I actually afford this car?</button>
-            <button class="btn-ghost" style="text-align:left;font-size:0.65rem" onclick="quickQuestion('What are the biggest financial risks of buying this specific car?')">What are the risks?</button>
-            <button class="btn-ghost" style="text-align:left;font-size:0.65rem" onclick="quickQuestion('What is a safer car price range for my income?')">What price range suits me?</button>
-            <button class="btn-ghost" style="text-align:left;font-size:0.65rem" onclick="quickQuestion('How should I adjust my budget if I want to buy this car?')">How to adjust my budget?</button>
+            <button class="btn-ghost" style="text-align:left;font-size:0.65rem" onclick="quickQuestion('Can I actually afford this car based on my income and current expenses?')">Can I afford this car?</button>
+            <button class="btn-ghost" style="text-align:left;font-size:0.65rem" onclick="quickQuestion('What are the biggest financial risks if I buy this car?')">What are the risks?</button>
+            <button class="btn-ghost" style="text-align:left;font-size:0.65rem" onclick="quickQuestion('What is a safer car price range given my salary?')">What price suits me?</button>
+            <button class="btn-ghost" style="text-align:left;font-size:0.65rem" onclick="quickQuestion('How should I adjust my monthly budget if I buy this car?')">How to adjust budget?</button>
+            <button class="btn-ghost" style="text-align:left;font-size:0.65rem" onclick="quickQuestion('Is buying a used car a smarter financial decision for me?')">New vs used for me?</button>
+            <button class="btn-ghost" style="text-align:left;font-size:0.65rem" onclick="quickQuestion('What would my savings look like in 5 years if I chose a cheaper car?')">5-year savings impact?</button>
+          </div>
+
+          <div style="margin-top:1.25rem;padding:1rem;background:var(--surface2);border:1px solid var(--border)">
+            <div style="font-family:var(--mono);font-size:0.6rem;color:var(--text-faint);letter-spacing:0.08em;margin-bottom:0.5rem">CONTEXT LOADED</div>
+            <div id="chat-context-summary" style="font-size:0.75rem;color:var(--text-dim);line-height:1.5">Complete your financial profile in Step 2 and select a car in Step 3 to give the AI full context.</div>
           </div>
         </div>
       </div>
@@ -1697,53 +1795,129 @@ function filterCars() {
 function fmt(n) { return 'RM ' + Math.round(n).toLocaleString(); }
 function fmtN(n) { return Math.round(n).toLocaleString(); }
 
+// Loan term in years — default 7
+state.loanTermYears = 7;
+
+function setLoanTerm(years, btn) {
+  state.loanTermYears = years;
+  document.querySelectorAll('.loan-term-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('term-label').textContent = years + 'yr';
+  recalcFinance();
+}
+
 function recalcFinance() {
-  state.salary = parseFloat(document.getElementById('fi-salary').value) || 0;
-  state.loans = parseFloat(document.getElementById('fi-loans').value) || 0;
-  state.expenses = parseFloat(document.getElementById('fi-expenses').value) || 0;
-  state.savings = parseFloat(document.getElementById('fi-savings').value) || 0;
+  state.salary    = parseFloat(document.getElementById('fi-salary').value)    || 0;
+  state.loans     = parseFloat(document.getElementById('fi-loans').value)     || 0;
+  state.expenses  = parseFloat(document.getElementById('fi-expenses').value)  || 0;
+  state.savings   = parseFloat(document.getElementById('fi-savings').value)   || 0;
   state.emergency = parseFloat(document.getElementById('fi-emergency').value) || 0;
-  state.age = parseInt(document.getElementById('fi-age').value) || 28;
-  state.dependents = parseInt(document.getElementById('fi-dependents').value) || 0;
-  state.stability = document.getElementById('fi-stability').value;
+  state.age         = parseInt(document.getElementById('fi-age').value)         || 28;
+  state.dependents  = parseInt(document.getElementById('fi-dependents').value)  || 0;
+  state.stability   = document.getElementById('fi-stability').value;
 
   if (!state.salary) return;
 
+  const loanTermMonths = (state.loanTermYears || 7) * 12;
+
+  // Disposable = salary minus existing commitments and living costs
   const disposable = state.salary - state.loans - state.expenses;
+
+  // Stability and dependent factors reduce how much is "safe" to allocate
   const stabilityFactor = state.stability === 'high' ? 1 : state.stability === 'medium' ? 0.85 : 0.7;
-  const depFactor = Math.max(0.7, 1 - state.dependents * 0.05);
+  const depFactor       = Math.max(0.7, 1 - state.dependents * 0.05);
+
+  // Safe monthly car budget = 20% of salary, adjusted for stability & dependents
   const maxCarPct = 0.20 * stabilityFactor * depFactor;
-  const budget = state.salary * maxCarPct;
-  const emergencyOk = state.emergency >= state.expenses * 6;
+  const budget    = state.salary * maxCarPct;
+
+  // Emergency fund check: should cover 6 months of expenses
+  const emergencyTarget = state.expenses * 6;
+  const emergencyOk     = state.emergency >= emergencyTarget;
+
+  // Savings available as down payment (keep emergency fund untouched, use 30% of remainder)
+  const freeSavings  = Math.max(0, state.savings - state.emergency);
+  const downPayment  = freeSavings * 0.3;
+
+  // Max car price: what you can buy given monthly budget + down payment over the loan term
+  // Using flat-rate approximation (Malaysian hire-purchase style) at 3.5%
+  const flatRate      = 0.035;
+  const loanTermYrs   = state.loanTermYears || 7;
+  const totalInterest = (budget * loanTermMonths) * flatRate * loanTermYrs / loanTermYrs; // simplified
+  const loanPrincipal = budget * loanTermMonths / (1 + flatRate * loanTermYrs);
+  const maxPrice      = loanPrincipal + downPayment;
+
+  // What's left after car budget
+  const remaining = disposable - budget;
+
+  // DTI includes existing loans + proposed car budget
   const dti = ((state.loans + budget) / state.salary) * 100;
-  const maxPrice = budget * 55; // rough loan multiplier for 7yr
 
-  state.budget = budget;
-  state.dti = dti;
+  // Save to state for downstream pages
+  state.budget        = budget;
+  state.dti           = dti;
+  state.maxPrice      = maxPrice;
+  state.downPayment   = downPayment;
 
-  document.getElementById('res-budget').textContent = fmt(budget);
-  document.getElementById('res-maxprice').textContent = fmt(maxPrice);
-  document.getElementById('res-disposable').textContent = fmt(disposable);
-  document.getElementById('res-dti').textContent = dti.toFixed(1) + '%';
+  // Update results panel
+  document.getElementById('res-budget').textContent       = fmt(budget);
+  document.getElementById('res-maxprice').textContent     = fmt(maxPrice);
+  document.getElementById('res-disposable').textContent   = fmt(disposable);
+  document.getElementById('res-remaining').textContent    = remaining >= 0
+    ? fmt(remaining)
+    : `<span style="color:var(--red)">${fmt(remaining)} shortfall</span>`;
+  document.getElementById('res-dti').textContent          = dti.toFixed(1) + '%';
+  document.getElementById('res-emergency-status').innerHTML = emergencyOk
+    ? `<span style="color:var(--green)">✓ Adequate (${fmt(state.emergency)})</span>`
+    : `<span style="color:var(--amber)">⚠ Low — need ${fmt(emergencyTarget - state.emergency)} more</span>`;
 
-  const gauge = document.getElementById('res-gauge');
-  const badge = document.getElementById('res-badge');
-  const advice = document.getElementById('res-advice');
+  // Gauge + badge + advice
+  const gauge    = document.getElementById('res-gauge');
+  const badge    = document.getElementById('res-badge');
+  const advice   = document.getElementById('res-advice');
   const gaugePct = Math.min(100, (dti / 60) * 100);
   gauge.style.width = gaugePct + '%';
+
+  const downPaymentNote = downPayment > 0
+    ? `Your available savings of <strong style="color:var(--text)">${fmt(freeSavings)}</strong> contribute ~${fmt(downPayment)} as down payment, boosting your max car price.`
+    : '';
+
+  const emergencyNote = !emergencyOk
+    ? `<br><br>⚠️ Your emergency fund (${fmt(state.emergency)}) is below the recommended 6-month buffer of <strong>${fmt(emergencyTarget)}</strong>. Consider building this before committing to a car loan.`
+    : '';
+
+  const loansNote = state.loans > 0
+    ? `<br><br>📋 You already carry <strong>${fmt(state.loans)}/month</strong> in existing loan commitments. This reduces your available car budget significantly.`
+    : '';
 
   if (dti < 30) {
     badge.className = 'badge badge-safe';
     badge.textContent = 'SAFE';
-    advice.innerHTML = `<p style="font-size:0.78rem;color:var(--text-dim);line-height:1.6">Your debt-to-income ratio is healthy. Based on your income and expenses, you can comfortably afford up to <strong style="color:var(--gold)">${fmt(maxPrice)}</strong> in car value. ${!emergencyOk ? '<br><br>⚠️ Consider building your emergency fund to at least 6 months of expenses (' + fmt(state.expenses * 6) + ') before committing.' : ''}</p>`;
+    advice.innerHTML = `<p style="font-size:0.78rem;color:var(--text-dim);line-height:1.6">
+      Your finances are in good shape. Over a <strong style="color:var(--text)">${loanTermYrs}-year loan</strong>, 
+      you can comfortably target a car up to <strong style="color:var(--gold)">${fmt(maxPrice)}</strong>.
+      ${downPaymentNote} ${emergencyNote} ${loansNote}
+    </p>`;
   } else if (dti < 50) {
     badge.className = 'badge badge-risky';
     badge.textContent = 'CAUTION';
-    advice.innerHTML = `<p style="font-size:0.78rem;color:var(--amber);line-height:1.6">Your debt obligations are approaching risky levels. A car at this budget could strain your finances if any unexpected expense arises. Consider targeting a car under <strong>${fmt(maxPrice * 0.75)}</strong> for a safer outcome.</p>`;
+    advice.innerHTML = `<p style="font-size:0.78rem;color:var(--amber);line-height:1.6">
+      Your debt obligations are stretching your finances. 
+      ${state.loans > 0 ? `Existing loans of ${fmt(state.loans)}/month are a major factor. ` : ''}
+      ${state.expenses > state.salary * 0.5 ? `Your living expenses (${fmt(state.expenses)}) consume over half your salary — consider reducing them first. ` : ''}
+      Over ${loanTermYrs} years, a safer target would be under <strong>${fmt(maxPrice * 0.75)}</strong>.
+      ${emergencyNote}
+    </p>`;
   } else {
     badge.className = 'badge badge-danger';
     badge.textContent = 'DANGEROUS';
-    advice.innerHTML = `<p style="font-size:0.78rem;color:var(--red);line-height:1.6">⚠️ High financial risk detected. Your current loan commitments and expenses leave very little room for a car payment. Adding a car at this level could lead to serious financial stress. Recommended action: reduce other loans first or target cars under <strong>${fmt(maxPrice * 0.5)}</strong>.</p>`;
+    advice.innerHTML = `<p style="font-size:0.78rem;color:var(--red);line-height:1.6">
+      ⚠️ High financial risk. After salary (${fmt(state.salary)}), existing loans (${fmt(state.loans)}), 
+      and living expenses (${fmt(state.expenses)}), your disposable income is only <strong>${fmt(disposable)}</strong>/month.
+      Adding a car loan at this point is very risky.
+      ${emergencyNote} 
+      <br><br>Recommended: reduce other debts first, or target a car under <strong>${fmt(maxPrice * 0.5)}</strong>.
+    </p>`;
   }
 }
 
@@ -1764,7 +1938,7 @@ function calcTrueCost() {
   const downPayment = car.price * 0.1;
   const loanAmt = car.price - downPayment;
   const rate = car.type === 'new' ? 0.035 : 0.045;
-  const months = 84;
+  const months = (state.loanTermYears || 7) * 12;
   const monthly_loan = loanPayment(loanAmt, rate, months);
   const fuel = car.engine <= 1000 ? 380 : car.engine <= 1300 ? 480 : car.engine <= 1500 ? 580 : 700;
   const insurance = (car.price * 0.024) / 12;
@@ -1864,62 +2038,279 @@ function calcScenarios() {
 }
 
 // ============================================================
-// AI INSIGHTS SIDEBAR
+// AI INSIGHTS SIDEBAR (static fallback)
 // ============================================================
 function buildInsights() {
   const car = state.selectedCar;
   const tc = state.trueCost;
-  if (!car || !tc) return;
+  if (!car || !tc || !state.salary) return;
 
-  const pct = state.salary > 0 ? (tc.total / state.salary * 100).toFixed(0) : '?';
-
-  document.getElementById('insight-summary').textContent =
-    `${car.brand} ${car.model} (${car.year}) will cost you RM${Math.round(tc.total).toLocaleString()}/month in total, which is ${pct}% of your income. The loan alone is RM${Math.round(tc.monthly_loan).toLocaleString()}/month.`;
-
-  const dti = state.dti;
-  document.getElementById('insight-risk').textContent =
-    dti > 50 ? `Critical: Your debt-to-income ratio of ${dti.toFixed(0)}% is dangerously high. Any job disruption could make payments impossible.` :
-    dti > 30 ? `Moderate risk: Your DTI of ${dti.toFixed(0)}% means this car will stretch your budget. One unexpected bill could cause missed payments.` :
-    `Your DTI of ${dti.toFixed(0)}% is within healthy range, but always maintain 6 months of emergency reserves.`;
-
+  const pct = (tc.total / state.salary * 100).toFixed(0);
   const saferPrice = Math.round(state.salary * 0.15 * 55);
-  document.getElementById('insight-better').textContent =
-    `Based on your income of RM${state.salary.toLocaleString()}/month, a safer car would be priced around RM${saferPrice.toLocaleString()} or below. This keeps total costs under 20% of income.`;
 
-  const yearsSaving = 3;
-  const savingAmt = tc.total * 12 * yearsSaving;
-  document.getElementById('insight-warning').textContent =
-    `Over 3 years, this car will cost RM${Math.round(savingAmt).toLocaleString()} in total. That money, invested, could grow significantly. Always compare the cost of ownership against your long-term financial goals.`;
+  // Update chat context summary
+  document.getElementById('chat-context-summary').innerHTML =
+    `<strong style="color:var(--gold)">${car.brand} ${car.model}</strong> · RM${car.price.toLocaleString()}<br>
+     Salary: RM${state.salary.toLocaleString()} · DTI: ${state.dti.toFixed(0)}%<br>
+     True monthly cost: RM${Math.round(tc.total).toLocaleString()} (${pct}% of income)`;
 }
 
 // ============================================================
-// AI CHAT
+// GROQ HELPER
+// ============================================================
+
+async function callGroq(messages, maxTokens = 1000) {
+  const response = await fetch('/api/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'llama-3.3-70b-versatile',
+      max_tokens: maxTokens,
+      messages
+    })
+  });
+  const data = await response.json();
+  if (data.error) throw new Error(data.error.message);
+  return data.choices?.[0]?.message?.content || '';
+}
+
+// ============================================================
+// SYSTEM PROMPT BUILDER
 // ============================================================
 function buildSystemPrompt() {
   const car = state.selectedCar;
   const tc = state.trueCost;
   const pct = (state.salary > 0 && tc) ? (tc.total / state.salary * 100).toFixed(1) : 'unknown';
 
-  return `You are TrueCost AI, a Malaysian personal finance advisor specialising in car affordability. You speak in clear, simple English — not jargon. You are honest even when the truth is uncomfortable.
+  return `You are TrueCost AI, a Malaysian personal finance advisor specialising in car affordability. You speak in clear, simple English — honest, direct, never jargon-heavy.
 
 USER'S FINANCIAL PROFILE:
-- Monthly salary: RM${state.salary.toLocaleString()}
-- Existing loans: RM${state.loans.toLocaleString()}/month
-- Monthly expenses: RM${state.expenses.toLocaleString()}
-- Savings: RM${state.savings.toLocaleString()}
+- Monthly take-home salary: RM${state.salary.toLocaleString()}
+- Existing loan commitments: RM${state.loans.toLocaleString()}/month
+- Monthly living expenses: RM${state.expenses.toLocaleString()}
+- Total savings: RM${state.savings.toLocaleString()}
 - Emergency fund: RM${state.emergency.toLocaleString()}
-- Age: ${state.age}, Dependents: ${state.dependents}, Job stability: ${state.stability}
+- Age: ${state.age} | Dependents: ${state.dependents} | Job stability: ${state.stability}
 - Debt-to-income ratio: ${state.dti.toFixed(1)}%
+- Preferred loan term: ${state.loanTermYears || 7} years
+- Disposable income after expenses: RM${Math.max(0, state.salary - state.loans - state.expenses).toLocaleString()}
 
 SELECTED VEHICLE:
-${car ? `- ${car.brand} ${car.model} (${car.year}, ${car.type})
+${car ? `- ${car.brand} ${car.model} (${car.year}, ${car.type === 'new' ? 'Brand New' : 'Used'})
 - Purchase price: RM${car.price.toLocaleString()}
-- True monthly cost: RM${tc ? Math.round(tc.total).toLocaleString() : 'unknown'}
-- % of income: ${pct}%
-- Loan installment: RM${tc ? Math.round(tc.monthly_loan).toLocaleString() : 'unknown'}/month` : 'No car selected yet.'}
+- Loan installment: RM${tc ? Math.round(tc.monthly_loan).toLocaleString() : '?'}/month
+- Fuel cost: RM${tc ? Math.round(tc.fuel).toLocaleString() : '?'}/month
+- Insurance + road tax: RM${tc ? Math.round(tc.insurance + tc.roadtax).toLocaleString() : '?'}/month
+- Maintenance estimate: RM${tc ? Math.round(tc.maint).toLocaleString() : '?'}/month
+- Monthly depreciation: RM${tc ? Math.round(tc.deprec).toLocaleString() : '?'}/month
+- TRUE total monthly cost: RM${tc ? Math.round(tc.total).toLocaleString() : '?'}
+- % of monthly income: ${pct}%
+- 5-year total ownership cost: RM${tc ? Math.round(tc.total5yr).toLocaleString() : '?'}` : 'No car selected yet.'}
 
-Give advice that is specific to their numbers. Be direct. If the purchase is financially dangerous, say so clearly and explain why. Keep responses under 200 words. Use simple language that a non-finance person can understand.`;
+Malaysian financial context: Recommended car cost is max 15–20% of monthly income. Healthy DTI is below 30%. Emergency fund should cover 6 months of expenses.`;
 }
+
+// ============================================================
+// FEATURE 1: AUTO FINANCIAL ANALYSIS
+// ============================================================
+async function runFullAnalysis() {
+  const groqKey = document.getElementById('groq-key').value.trim();
+  if (!groqKey) {
+    alert('Please enter your Groq API key first.');
+    return;
+  }
+  if (!state.salary) {
+    alert('Please complete your financial profile in Step 2 first.');
+    return;
+  }
+  if (!state.selectedCar) {
+    alert('Please select a car in Step 3 first.');
+    return;
+  }
+
+  const btn = document.getElementById('btn-analyze');
+  btn.disabled = true;
+  btn.textContent = 'Analysing...';
+  document.getElementById('analysis-placeholder').style.display = 'none';
+  document.getElementById('analysis-content').style.display = 'none';
+  document.getElementById('analysis-loading').style.display = 'flex';
+
+  const prompt = `${buildSystemPrompt()}
+
+Analyse this car purchase decision and respond ONLY with a JSON object (no markdown, no backticks) in this exact format:
+{
+  "verdict": "SAFE" | "RISKY" | "DANGEROUS",
+  "affordability": "2-3 sentences on whether this car is affordable for this person",
+  "risks": "2-3 sentences on the key financial risks",
+  "safer_alternative": "1-2 sentences suggesting a safer price range or approach",
+  "long_term": "2-3 sentences on 5-year financial consequences",
+  "summary": "One direct, plain-English paragraph (4-5 sentences) combining all the above as a financial educator would explain it to a non-finance person"
+}`;
+
+  try {
+    const raw = await callGroq([{ role: 'user', content: prompt }], 800);
+
+    // Strip markdown fences if present
+    const clean = raw.replace(/```json|```/g, '').trim();
+    const parsed = JSON.parse(clean);
+
+    // Render verdict cards
+    const verdictColor = parsed.verdict === 'SAFE' ? 'var(--green)' : parsed.verdict === 'RISKY' ? 'var(--amber)' : 'var(--red)';
+    const verdictBadge = parsed.verdict === 'SAFE' ? 'badge-safe' : parsed.verdict === 'RISKY' ? 'badge-risky' : 'badge-danger';
+
+    document.getElementById('analysis-cards').innerHTML = `
+      <div style="background:var(--surface2);padding:1rem;border-left:2px solid ${verdictColor}">
+        <div style="font-family:var(--mono);font-size:0.6rem;letter-spacing:0.1em;color:var(--text-faint);margin-bottom:0.4rem">AFFORDABILITY</div>
+        <div style="font-size:0.82rem;line-height:1.5;color:var(--text)">${parsed.affordability}</div>
+      </div>
+      <div style="background:var(--surface2);padding:1rem;border-left:2px solid var(--red)">
+        <div style="font-family:var(--mono);font-size:0.6rem;letter-spacing:0.1em;color:var(--text-faint);margin-bottom:0.4rem">RISKS INVOLVED</div>
+        <div style="font-size:0.82rem;line-height:1.5;color:var(--text)">${parsed.risks}</div>
+      </div>
+      <div style="background:var(--surface2);padding:1rem;border-left:2px solid var(--green)">
+        <div style="font-family:var(--mono);font-size:0.6rem;letter-spacing:0.1em;color:var(--text-faint);margin-bottom:0.4rem">SAFER ALTERNATIVE</div>
+        <div style="font-size:0.82rem;line-height:1.5;color:var(--text)">${parsed.safer_alternative}</div>
+      </div>
+      <div style="background:var(--surface2);padding:1rem;border-left:2px solid var(--gold)">
+        <div style="font-family:var(--mono);font-size:0.6rem;letter-spacing:0.1em;color:var(--text-faint);margin-bottom:0.4rem">LONG-TERM IMPACT</div>
+        <div style="font-size:0.82rem;line-height:1.5;color:var(--text)">${parsed.long_term}</div>
+      </div>
+    `;
+
+    document.getElementById('analysis-verdict').innerHTML = `
+      <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--border)">
+        <span class="badge ${verdictBadge}" style="font-size:0.7rem;padding:0.35rem 0.9rem">
+          ${parsed.verdict === 'SAFE' ? '✓ SAFE TO PROCEED' : parsed.verdict === 'RISKY' ? '⚠ PROCEED WITH CAUTION' : '✗ FINANCIALLY DANGEROUS'}
+        </span>
+        <span style="font-family:var(--mono);font-size:0.65rem;color:var(--text-faint)">AI Verdict</span>
+      </div>
+      <p style="font-size:0.88rem;line-height:1.8;color:var(--text-dim)">${parsed.summary}</p>
+    `;
+
+    document.getElementById('analysis-loading').style.display = 'none';
+    document.getElementById('analysis-content').style.display = 'block';
+
+    // Auto-inject a summary message into chat
+    appendMsg('ai', `I've completed your financial analysis. Verdict: <strong>${parsed.verdict}</strong>. ${parsed.summary} Feel free to ask me anything specific.`);
+
+  } catch (err) {
+    document.getElementById('analysis-loading').style.display = 'none';
+    document.getElementById('analysis-placeholder').style.display = 'flex';
+    document.getElementById('analysis-placeholder').innerHTML = `
+      <div style="font-size:1.5rem">⚠️</div>
+      <div style="font-size:0.82rem;color:var(--red)">${err.message === 'NO_KEY' ? 'Please enter your Groq API key.' : 'Error: ' + err.message}</div>
+    `;
+  }
+
+  btn.disabled = false;
+  btn.textContent = '⚡ Generate Analysis';
+}
+
+// ============================================================
+// FEATURE 2: AI CAR RECOMMENDATION ENGINE
+// ============================================================
+async function runRecommendations() {
+  const groqKey = document.getElementById('groq-key').value.trim();
+  if (!groqKey) { alert('Please enter your Groq API key first.'); return; }
+  if (!state.salary) { alert('Please complete your financial profile in Step 2 first.'); return; }
+
+  const btn = document.getElementById('btn-recommend');
+  btn.disabled = true;
+  btn.textContent = 'Finding cars...';
+  document.getElementById('reco-placeholder').style.display = 'none';
+  document.getElementById('reco-cards').style.display = 'none';
+  document.getElementById('reco-loading').style.display = 'flex';
+
+  const saferBudget = Math.round(state.salary * 0.18 * 55);
+  const car = state.selectedCar;
+
+  const prompt = `${buildSystemPrompt()}
+
+The user is considering buying ${car ? `a ${car.brand} ${car.model} at RM${car.price.toLocaleString()}` : 'a car'}.
+Their safe car budget is approximately RM${saferBudget.toLocaleString()}.
+
+Recommend exactly 3 Malaysian cars that are financially smarter choices for this person.
+Focus on popular Malaysian market cars: Perodua (Axia, Myvi, Bezza, Ativa, Alza), Proton (Saga, Iriz, Persona, X50, X70), Toyota (Vios, Yaris), Honda (City, Jazz), or good used options.
+
+Respond ONLY with a JSON array (no markdown, no backticks):
+[
+  {
+    "rank": 1,
+    "brand": "Perodua",
+    "model": "Myvi",
+    "year": "2023",
+    "type": "new",
+    "est_price": 55000,
+    "est_monthly_total": 950,
+    "pct_of_income": 19,
+    "reason": "Short explanation of why this suits the user financially",
+    "highlight": "Key selling point in 5 words or less"
+  }
+]`;
+
+  try {
+    const raw = await callGroq([{ role: 'user', content: prompt }], 700);
+    const clean = raw.replace(/```json|```/g, '').trim();
+    const recs = JSON.parse(clean);
+
+    const emojis = { 'Perodua': '🚗', 'Proton': '🚙', 'Toyota': '🚘', 'Honda': '🚗', 'Nissan': '🚙', 'Mazda': '🚘' };
+    const rankColors = ['var(--gold)', 'var(--text-dim)', 'var(--amber)'];
+    const rankLabels = ['BEST MATCH', 'RUNNER UP', 'ALSO CONSIDER'];
+
+    document.getElementById('reco-cards').innerHTML = recs.map((r, i) => `
+      <div style="background:var(--surface);padding:1.5rem;${i === 0 ? 'border-top:2px solid var(--gold)' : ''}">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem">
+          <div>
+            <div style="font-family:var(--mono);font-size:0.58rem;letter-spacing:0.12em;color:${rankColors[i]};margin-bottom:0.3rem">${rankLabels[i]}</div>
+            <div style="font-family:var(--serif);font-size:1.1rem;margin-bottom:0.15rem">${r.brand} ${r.model}</div>
+            <div style="font-family:var(--mono);font-size:0.65rem;color:var(--text-dim)">${r.year} · ${r.type === 'new' ? 'New' : 'Used'}</div>
+          </div>
+          <div style="font-size:2rem">${emojis[r.brand] || '🚗'}</div>
+        </div>
+
+        <div style="font-family:var(--mono);font-size:1rem;color:var(--gold);margin-bottom:0.5rem">
+          RM ${r.est_price.toLocaleString()}
+        </div>
+
+        <div style="display:flex;justify-content:space-between;padding:0.5rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:0.75rem">
+          <div style="text-align:center">
+            <div style="font-family:var(--mono);font-size:0.68rem;color:var(--text-faint)">Est. monthly</div>
+            <div style="font-family:var(--mono);font-size:0.85rem;color:var(--text)">RM ${r.est_monthly_total.toLocaleString()}</div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-family:var(--mono);font-size:0.68rem;color:var(--text-faint)">% of income</div>
+            <div style="font-family:var(--mono);font-size:0.85rem;color:${r.pct_of_income <= 20 ? 'var(--green)' : r.pct_of_income <= 30 ? 'var(--amber)' : 'var(--red)'}">${r.pct_of_income}%</div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-family:var(--mono);font-size:0.68rem;color:var(--text-faint)">Highlight</div>
+            <div style="font-family:var(--mono);font-size:0.65rem;color:var(--gold);max-width:80px;text-align:center">${r.highlight}</div>
+          </div>
+        </div>
+
+        <div style="font-size:0.78rem;color:var(--text-dim);line-height:1.5">${r.reason}</div>
+      </div>
+    `).join('');
+
+    document.getElementById('reco-loading').style.display = 'none';
+    document.getElementById('reco-cards').style.display = 'grid';
+
+  } catch (err) {
+    document.getElementById('reco-loading').style.display = 'none';
+    document.getElementById('reco-placeholder').style.display = 'flex';
+    document.getElementById('reco-placeholder').innerHTML = `
+      <div style="font-size:1.5rem">⚠️</div>
+      <div style="font-size:0.82rem;color:var(--red)">${err.message === 'NO_KEY' ? 'Please enter your Groq API key.' : 'Error: ' + err.message}</div>
+    `;
+  }
+
+  btn.disabled = false;
+  btn.textContent = '🚗 Get Recommendations';
+}
+
+// ============================================================
+// AI CHAT (with conversation history)
+// ============================================================
+const chatHistory = [];
 
 async function sendAI() {
   const input = document.getElementById('ai-input');
@@ -1928,10 +2319,10 @@ async function sendAI() {
   if (!msg) return;
 
   appendMsg('user', msg);
+  chatHistory.push({ role: 'user', content: msg });
   input.value = '';
   btn.disabled = true;
 
-  // Typing indicator
   const typingId = 'typing-' + Date.now();
   const container = document.getElementById('ai-messages');
   const typingEl = document.createElement('div');
@@ -1942,25 +2333,17 @@ async function sendAI() {
   container.scrollTop = container.scrollHeight;
 
   try {
-   
-    const response = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
-        max_tokens: 1000,
-        messages: [{ role: 'system', content: buildSystemPrompt() }, { role: 'user', content: msg }]
-      })
-    });
-
-    const data = await response.json();
-    const text = data.choices?.[0]?.message?.content || data.error?.message || 'I was unable to generate a response. Please try again.';
-
+    const messages = [
+      { role: 'system', content: buildSystemPrompt() },
+      ...chatHistory.slice(-8) // keep last 8 turns for context window
+    ];
+    const text = await callGroq(messages, 400);
+    chatHistory.push({ role: 'assistant', content: text });
     document.getElementById(typingId)?.remove();
     appendMsg('ai', text);
   } catch (err) {
     document.getElementById(typingId)?.remove();
-    appendMsg('ai', 'Connection error. Please check your network and try again.');
+    appendMsg('ai', err.message === 'NO_KEY' ? '⚠️ Please enter your Groq API key.' : 'Connection error: ' + err.message);
   }
 
   btn.disabled = false;
