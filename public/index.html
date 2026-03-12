@@ -512,7 +512,6 @@
         <select class="filter-select" id="filter-condition" onchange="applyFilters()">
           <option value="">All Conditions</option>
           <option value="New">New</option>
-          <option value="Used">Used</option>
           <option value="Recond">Recond</option>
         </select>
         <select class="filter-select" id="filter-body" onchange="applyFilters()">
@@ -574,9 +573,9 @@
         <div class="label">Income Allocation</div>
         <div class="grid-2" style="margin-top:1.25rem;gap:2rem">
           <div>
-            <div class="income-percent" id="ig-pct" style="color:var(--text-dim)">—%
+            <div class="income-percent text-gold" id="ig-pct">—%</div>
             <div style="font-size:0.85rem;color:var(--text-dim);margin-top:0.25rem">of monthly income goes to this car</div>
-            <div style="font-family:var(--mono);font-size:0.7rem;color:var(--text-faint);margin-top:0.5rem">Comfortable: ≤25% · Caution: 25–30% · High: 30%+</div>
+            <div style="font-family:var(--mono);font-size:0.7rem;color:var(--text-faint);margin-top:0.5rem">Recommended maximum: 15–20%</div>
           </div>
           <div>
             <div class="gauge-bar" style="height:10px;margin-top:1rem"><div class="gauge-fill" id="ig-bar" style="width:0%"></div></div>
@@ -600,15 +599,15 @@
   <div class="container">
     <div class="page-header">
       <div class="page-num">Step 05 of 06</div>
-      <h1 class="page-title" id="p5-title">Wealth Gap Analysis</h1>
-      <p class="page-desc" id="p5-desc">Two paths, one decision. See exactly how much wealth you build — or sacrifice — depending on which car you choose.</p>
+      <h1 class="page-title">Wealth Gap Analysis</h1>
+      <p class="page-desc">Two paths, one decision. See exactly how much wealth you build — or sacrifice — depending on which car you choose.</p>
     </div>
 
     <!-- Summary stats -->
     <div class="wc-stats" style="margin-top:2rem">
       <div class="wc-stat">
         <div class="wc-stat-icon">🔢</div>
-        <div class="wc-stat-label" id="wc-stat1-label">Monthly Saving (Used vs New)</div>
+        <div class="wc-stat-label">Monthly Saving (Used vs New)</div>
         <div class="wc-stat-val" id="wc-monthly-saving" style="color:#c9a84c">RM —</div>
       </div>
       <div class="wc-stat">
@@ -648,7 +647,7 @@
             <div style="width:20px;height:2px;background:#3a3a3a;border-radius:2px"></div> Track A — New Car (RM 0 invested)
           </div>
           <div style="display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:0.65rem;color:var(--text-faint)">
-            <div style="width:20px;height:3px;background:#4caf7d;border-radius:2px"></div> <span id="wc-legend-b">Track B — Pre-owned (savings invested at 7% p.a.)</span>
+            <div style="width:20px;height:3px;background:#4caf7d;border-radius:2px"></div> Track B — Pre-owned (savings invested at 7% p.a.)
           </div>
         </div>
       </div>
@@ -681,10 +680,10 @@
           <div class="wc-track-outcome" style="color:#e05252" id="wc-a-outcome">RM 0 portfolio after selected horizon</div>
         </div>
         <div class="wc-track wc-track-b">
-          <div class="wc-track-label" style="color:#4caf7d" id="wc-b-label">Track B — Pre-owned (~65% of new price)</div>
+          <div class="wc-track-label" style="color:#4caf7d">Track B — Pre-owned (~65% of new price)</div>
           <div class="wc-track-emi" id="wc-b-emi" style="color:#4caf7d">RM —</div>
-          <div class="wc-track-sub" id="wc-b-sub">/month lower total cost</div>
-          <div style="font-family:var(--mono);font-size:0.65rem;color:var(--text-faint)" id="wc-b-invest-label">Monthly saving invested</div>
+          <div class="wc-track-sub">/month lower total cost</div>
+          <div style="font-family:var(--mono);font-size:0.65rem;color:var(--text-faint)">Monthly saving invested</div>
           <div class="wc-track-outcome" style="color:#c9a84c" id="wc-b-outcome">RM — portfolio value</div>
         </div>
       </div>
@@ -707,10 +706,10 @@
         </div>
         <!-- Scenario B -->
         <div class="wc-sc wc-sc-featured">
-          <div id="sc-b-badge" style="font-family:var(--mono);font-size:0.58rem;color:var(--green);letter-spacing:0.1em;margin-bottom:4px">✓ RECOMMENDED</div>
+          <div style="font-family:var(--mono);font-size:0.58rem;color:var(--green);letter-spacing:0.1em;margin-bottom:4px">✓ RECOMMENDED</div>
           <div class="wc-sc-letter">B</div>
-          <div class="wc-sc-title" id="sc-b-title">Buy Used (3yr old)</div>
-          <div class="wc-sc-sub" id="sc-b-sub">Biggest depreciation already absorbed.</div>
+          <div class="wc-sc-title">Buy Used (3yr old)</div>
+          <div class="wc-sc-sub">Biggest depreciation already absorbed.</div>
           <div class="wc-sc-row"><span class="wc-sc-row-label">Purchase Price</span><span id="sc-b-price" class="text-gold">—</span></div>
           <div class="wc-sc-row"><span class="wc-sc-row-label">Total Interest Paid</span><span id="sc-b-interest" class="text-amber">—</span></div>
           <div class="wc-sc-row"><span class="wc-sc-row-label">Running Costs (5yr)</span><span id="sc-b-running">—</span></div>
@@ -880,11 +879,6 @@ function setHorizon(years, btn) {
 function goPage(n) {
   const currentActive = document.querySelector('.page.active');
   const next = document.getElementById('page-' + n);
-  // Safety check: if page element is missing, abort navigation
-  if (!next) {
-    console.warn('Page element missing: page-' + n);
-    return;
-  }
   if (currentActive && currentActive !== next) {
     currentActive.classList.add('exit');
     currentActive.classList.remove('active');
@@ -899,15 +893,8 @@ function goPage(n) {
     else if (i + 1 < n) s.classList.add('done');
   });
   if (n === 4) calcTrueCost();
-  if (n === 5) {
-    calcScenarios();
-    drawWealthCharts();
-    // Ensure default panel is visible
-    switchWcTab('scenarios');
-  }
-  if (n === 6) {
-    buildInsights();
-  }
+  if (n === 5) { calcScenarios(); drawWealthCharts(); }
+  if (n === 6) buildInsights();
 }
 
 // ============================================================
@@ -971,7 +958,11 @@ function applyFilters() {
   filteredCars = CAR_DATASET.filter(c => {
     if (make     && c.make !== make) return false;
     if (model    && c.model !== model) return false;
-    if (cond     && c.condition !== cond) return false;
+    if (cond) {
+  if (c.condition !== cond) return false;
+} else {
+  if (c.condition === 'Used') return false;
+}
     if (bodyType && c.bodyType !== bodyType) return false;
     if (maxPrice && c.price > maxPrice) return false;
     if (search   && !(
@@ -982,23 +973,18 @@ function applyFilters() {
     return true;
   });
 
-  // Sort by user preference first
-  if (sortBy === 'price-asc')       filteredCars.sort((a,b) => a.price - b.price);
+  // Sort
+  if (sortBy === 'price-asc')  filteredCars.sort((a,b) => a.price - b.price);
   else if (sortBy === 'price-desc') filteredCars.sort((a,b) => b.price - a.price);
   else if (sortBy === 'year-desc')  filteredCars.sort((a,b) => b.year - a.year);
   else if (sortBy === 'year-asc')   filteredCars.sort((a,b) => a.year - b.year);
 
-  // AI picks ALWAYS run last and lock to the top 3 slots on page 1
-  if (state.aiRecoIds.length) {
-    filteredCars.sort((a, b) => {
-      const aR = state.aiRecoIds.indexOf(a.id);
-      const bR = state.aiRecoIds.indexOf(b.id);
-      if (aR !== -1 && bR !== -1) return aR - bR;
-      if (aR !== -1) return -1;
-      if (bR !== -1) return 1;
-      return 0;
-    });
-  }
+  // AI recommended always bubble to top
+  filteredCars.sort((a, b) => {
+    const aR = state.aiRecoIds.indexOf(a.id), bR = state.aiRecoIds.indexOf(b.id);
+    if (aR !== -1 && bR !== -1) return aR - bR;
+    if (aR !== -1) return -1; if (bR !== -1) return 1; return 0;
+  });
 
   currentPage = 1;
   renderCars();
@@ -1090,60 +1076,21 @@ async function runRecommendationsP3() {
   const btn = document.getElementById('btn-reco-p3');
   const bannerText = document.getElementById('reco-banner-text');
   btn.disabled = true; btn.textContent = 'Finding picks...';
-  bannerText.textContent = 'AI is analysing your profile and scanning all 919 cars...';
-
-  // ── Sample intelligently from the full dataset so AI gets variety ──────────
-  // Group by condition, pick affordable cars first (within 2x their budget)
-  const budget = state.salary * 0.20 * (state.loanTermYears || 7) * 12 * 0.9; // rough max price
-  const affordable = CAR_DATASET.filter(c => c.price <= Math.max(budget * 1.5, 150000));
-  // Take up to 60: mix of all conditions, sorted by how close to budget
-  const samplePool = affordable.length >= 20
-    ? affordable.sort((a,b) => Math.abs(a.price - budget) - Math.abs(b.price - budget)).slice(0, 60)
-    : CAR_DATASET.slice(0, 60);
-
-  const carListContext = samplePool.map(c =>
-    `ID:${c.id} | ${c.make} ${c.model} ${c.variant} (${c.year}, ${c.condition}) | RM${c.price.toLocaleString()} | ${c.engine} ${c.transmission} ${c.bodyType} | ${c.mileage || 'New/Unreg'}`
-  ).join('\n');
-
-  const prompt = `${buildSystemPrompt()}\n\nHere are available cars from the Malaysian market:\n${carListContext}\n\nRecommend exactly 3 most financially suitable cars for this user from the list above. You MUST use IDs that appear in the list above.\nRespond ONLY with a JSON array (no markdown, no explanation):\n[{"id":123,"reason":"Short reason why this suits the user, max 15 words"},{"id":456,"reason":"Short reason"},{"id":789,"reason":"Short reason"}]`;
-
+  bannerText.textContent = 'AI is analysing your profile and matching cars...';
+  // Send first 40 filtered cars (or all if fewer) for AI to pick from
+  const carsForAI = filteredCars.slice(0, 40);
+  const carListContext = carsForAI.map(c=>`ID:${c.id} | ${c.make} ${c.model} ${c.variant} (${c.year}, ${c.condition}) | RM${c.price.toLocaleString()} | ${c.engine} ${c.transmission} ${c.bodyType} | ${c.mileage||'New'}`).join('\n');
+  const prompt = `${buildSystemPrompt()}\n\nHere are the available cars:\n${carListContext}\n\nRecommend the 3 most financially suitable cars. Respond ONLY with JSON array (no markdown):\n[{"id":2,"reason":"Short reason max 15 words"},{"id":1,"reason":"Short reason"},{"id":4,"reason":"Short reason"}]`;
   try {
-    const raw = await callGroq([{role:'user',content:prompt}], 500);
+    const raw = await callGroq([{role:'user',content:prompt}], 400);
     const recs = JSON.parse(raw.replace(/```json|```/g,'').trim());
-
-    // Validate IDs exist in dataset
-    const validRecs = recs.filter(r => CAR_DATASET.some(c => c.id === r.id));
-    if (!validRecs.length) throw new Error('AI returned no valid car IDs');
-
-    state.aiRecoIds = validRecs.map(r => r.id);
+    state.aiRecoIds = recs.map(r=>r.id);
     state.aiRecoReasons = {};
-    validRecs.forEach(r => { state.aiRecoReasons[r.id] = r.reason; });
-
-    // ── KEY FIX: clear all filters so AI cars are always visible ───────────
-    document.getElementById('filter-brand').value     = '';
-    document.getElementById('filter-model').value     = '';
-    document.getElementById('filter-condition').value = '';
-    document.getElementById('filter-body').value      = '';
-    document.getElementById('filter-price').value     = '';
-    document.getElementById('filter-sort').value      = '';
-    document.getElementById('filter-search').value    = '';
-    currentPage = 1;
-
-    // Re-run full filter — AI sort bubbles recommended cars to top of page 1
-    applyFilters();
-
-    // Scroll the grid into view so user sees the results
-    setTimeout(() => {
-      const grid = document.getElementById('cars-grid');
-      if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 150);
-
-    const topCar = CAR_DATASET.find(c => c.id === state.aiRecoIds[0]);
-    bannerText.innerHTML = topCar
-      ? `✦ Showing <strong style="color:var(--green)">${validRecs.length} AI picks</strong> at the top — Best match: <strong style="color:var(--text)">${topCar.make} ${topCar.model} (${topCar.year})</strong> at RM${topCar.price.toLocaleString()}.`
-      : `✦ AI found <strong style="color:var(--green)">${validRecs.length} recommended cars</strong> — shown at the top of the grid.`;
+    recs.forEach(r => { state.aiRecoReasons[r.id] = r.reason; });
+    renderCars();
+    const topCar = CAR_DATASET.find(c=>c.id===state.aiRecoIds[0]);
+    bannerText.innerHTML = `✦ AI found <strong style="color:var(--green)">${recs.length} recommended cars</strong>.${topCar?` Top pick: <strong>${topCar.brand} ${topCar.model}</strong>.`:''}`;
     btn.textContent = '↺ Refresh Picks';
-
   } catch(err) {
     bannerText.innerHTML = `<span style="color:var(--red)">Could not get AI recommendations: ${err.message}</span>`;
     btn.textContent = '✦ Get AI Picks';
@@ -1256,31 +1203,12 @@ function calcTrueCost() {
   document.getElementById('cb-5yr').textContent = fmt(total5yr);
   document.getElementById('cb-total').textContent = fmt(total);
   const pct = state.salary>0?(total/state.salary)*100:0;
-  state.incomePct = pct; // store for page 5 conditional framing
   document.getElementById('ig-pct').textContent = pct.toFixed(0)+'%';
-  document.getElementById('ig-bar').style.width = Math.min(100,(pct/45)*100)+'%';
-  // Bar gradient: solid green up to 25%, blends amber 25-30%, bleeds red above 30%
-  const igBar = document.getElementById('ig-bar');
-  const igPctEl = document.getElementById('ig-pct');
-  if (pct <= 25) {
-    igBar.style.background = 'var(--green)';
-    igPctEl.style.color = 'var(--green)';
-  } else if (pct <= 30) {
-    // Smooth green→amber transition in the 25-30% band
-    const t = ((pct - 25) / 5 * 100).toFixed(0);
-    igBar.style.background = `linear-gradient(90deg, var(--green) 0%, var(--green) ${100-t}%, var(--amber) 100%)`;
-    igPctEl.style.color = 'var(--amber)';
-  } else {
-    // Gradual red creep above 30%, fully red by 40%
-    const redPct = Math.min(100, ((pct - 30) / 10 * 100)).toFixed(0);
-    igBar.style.background = `linear-gradient(90deg, var(--green) 0%, var(--amber) 60%, var(--red) 100%)`;
-    igPctEl.style.color = pct >= 38 ? 'var(--red)' : 'var(--amber)';
-  }
+  document.getElementById('ig-bar').style.width = Math.min(100,(pct/40)*100)+'%';
   const safety=document.getElementById('cb-safety'), igAdvice=document.getElementById('ig-advice');
-  if (pct<=25) { safety.className='badge badge-safe'; safety.textContent='✓ COMFORTABLE'; igAdvice.textContent='Healthy allocation — well within the recommended 20–25% range.'; igAdvice.style.color='var(--green)'; }
-  else if (pct<=30) { safety.className='badge badge-risky'; safety.textContent='⚠ MANAGEABLE'; igAdvice.textContent='Within acceptable range. Most Malaysians spend up to 30% on car costs — manage other expenses carefully.'; igAdvice.style.color='var(--amber)'; }
-  else if (pct<=38) { safety.className='badge badge-danger'; safety.textContent='✗ STRETCHING'; igAdvice.textContent='Above 30% starts to pressure savings. Consider a slightly lower-priced option.'; igAdvice.style.color='var(--red)'; }
-  else { safety.className='badge badge-danger'; safety.textContent='✗ DANGEROUS'; igAdvice.textContent='Over 38% of income on a car will severely limit savings, investments and emergency reserves.'; igAdvice.style.color='var(--red)'; }
+  if (pct<=20) { safety.className='badge badge-safe'; safety.textContent='✓ SAFE'; igAdvice.textContent='This car fits comfortably within your income.'; igAdvice.style.color='var(--green)'; }
+  else if (pct<=35) { safety.className='badge badge-risky'; safety.textContent='⚠ RISKY'; igAdvice.textContent='Any income disruption could cause financial stress.'; igAdvice.style.color='var(--amber)'; }
+  else { safety.className='badge badge-danger'; safety.textContent='✗ DANGEROUS'; igAdvice.textContent='Over 35% of income on a car will severely limit savings and investment.'; igAdvice.style.color='var(--red)'; }
 }
 
 // ============================================================
@@ -1292,58 +1220,41 @@ function findTrackBCar(selectedCar) {
   const make  = selectedCar.make || selectedCar.brand;
   const model = selectedCar.model;
 
-  // 1. Same make+model, used or recond, cheaper
-  let candidates = CAR_DATASET.filter(c =>
-    c.make === make &&
-    c.model === model &&
-    (c.condition === 'Used' || c.condition === 'Recond') &&
-    c.price < price &&
-    c.id !== selectedCar.id
-  );
-  if (candidates.length) {
-    // pick the cheapest
-    candidates.sort((a,b) => a.price - b.price);
-    return candidates[0];
-  }
 
-  // 2. Same make, same body type, used/recond, cheaper
-  candidates = CAR_DATASET.filter(c =>
-    c.make === make &&
-    c.bodyType === selectedCar.bodyType &&
-    (c.condition === 'Used' || c.condition === 'Recond') &&
-    c.price < price &&
-    c.id !== selectedCar.id
-  );
-  if (candidates.length) {
-    candidates.sort((a,b) => a.price - b.price);
-    return candidates[0];
-  }
+  // 1. Same make+model, USED only, cheaper
+let candidates = CAR_DATASET.filter(c =>
+  c.make === make &&
+  c.model === model &&
+  c.condition === 'Used' &&
+  c.price < price &&
+  c.id !== selectedCar.id
+);
 
-  // 3. Same body type any make, used/recond, price within 50-80% of selected
-  candidates = CAR_DATASET.filter(c =>
-    c.bodyType === selectedCar.bodyType &&
-    (c.condition === 'Used' || c.condition === 'Recond') &&
-    c.price >= price * 0.40 &&
-    c.price < price * 0.80 &&
-    c.id !== selectedCar.id
-  );
-  if (candidates.length) {
-    candidates.sort((a,b) => a.price - b.price);
-    return candidates[0];
-  }
+// 2. Same make, same body type, USED only, cheaper
+candidates = CAR_DATASET.filter(c =>
+  c.make === make &&
+  c.bodyType === selectedCar.bodyType &&
+  c.condition === 'Used' &&
+  c.price < price &&
+  c.id !== selectedCar.id
+);
 
-  // 4. Fallback: any used/recond cheaper than 70% of price
-  candidates = CAR_DATASET.filter(c =>
-    (c.condition === 'Used' || c.condition === 'Recond') &&
-    c.price < price * 0.70 &&
-    c.id !== selectedCar.id
-  );
-  if (candidates.length) {
-    candidates.sort((a,b) => Math.abs(a.price - price*0.65) - Math.abs(b.price - price*0.65));
-    return candidates[0];
-  }
+// 3. Same body type any make, USED only
+candidates = CAR_DATASET.filter(c =>
+  c.bodyType === selectedCar.bodyType &&
+  c.condition === 'Used' &&
+  c.price >= price * 0.40 &&
+  c.price < price * 0.80 &&
+  c.id !== selectedCar.id
+);
 
-  return null; // use percentage fallback
+// 4. Fallback: any USED cheaper than 70%
+candidates = CAR_DATASET.filter(c =>
+  c.condition === 'Used' &&
+  c.price < price * 0.70 &&
+  c.id !== selectedCar.id
+);
+
 }
 
 // ============================================================
@@ -1355,8 +1266,6 @@ function calcScenarios() {
   const tc = state.trueCost;
   const isNew = car.type==='new' || car.condition==='New';
   const newPrice = car.price;
-  const pct = state.incomePct || 0;
-  const isAffordable = pct <= 30; // within healthy range
 
   const aInterest = (tc.monthly_loan*84) - (newPrice*0.9);
   const aRunning  = (tc.fuel+tc.insurance+tc.roadtax+tc.maint)*60;
@@ -1364,9 +1273,10 @@ function calcScenarios() {
   const aTotal    = newPrice*0.9 + aInterest + aRunning - aResale;
 
   // Track B: find a cheaper alternative from dataset
+  // Priority: same model (used/recond), else same make, else 65% fallback
   const trackBCar = findTrackBCar(car);
   const usedPrice = trackBCar ? trackBCar.price : Math.round(newPrice * 0.65);
-  state.trackBCar = trackBCar;
+  state.trackBCar = trackBCar; // store for display
 
   const usedLoan  = loanPayment(usedPrice*0.9, 0.045, 84);
   const bInterest = (usedLoan*84) - (usedPrice*0.9);
@@ -1380,54 +1290,26 @@ function calcScenarios() {
   const fv5         = Math.max(0, monthlyDiff) * ((Math.pow(1+r7,60)-1)/r7);
   const cOpp        = aTotal - bTotal;
 
-  // ── Conditional UX framing ──────────────────────────────────
-  // AFFORDABLE (≤30%): Open their mind — show the opportunity, don't push used cars
-  // OVER-BUDGET (>30%): Reality check — guide them toward a smarter alternative
-  if (isAffordable) {
-    // Page 5 header
-    document.getElementById('p5-title').textContent = 'Your Investment Opportunity';
-    document.getElementById('p5-desc').textContent = 'Your car choice fits comfortably within your budget. Here\'s what you could build if you channelled the price difference into investments instead.';
-    // Stat card
-    document.getElementById('wc-stat1-label').textContent = 'Monthly Investment Potential';
-    // Chart legend
-    document.getElementById('wc-legend-b').textContent = 'Alternative — If you invested the price difference at 7% p.a.';
-    // Track B card
-    document.getElementById('wc-b-label').textContent = '💡 Investment Path — What if you went cheaper?';
-    document.getElementById('wc-b-sub').textContent = '/month freed up to invest';
-    document.getElementById('wc-b-invest-label').textContent = 'Monthly investment at 7% p.a.';
-    // Scenario B — reframe as "Opportunity" not "Recommended"
-    document.getElementById('sc-b-badge').style.display = 'none'; // hide "RECOMMENDED"
-    document.getElementById('sc-b-title').textContent = trackBCar ? `${trackBCar.make} ${trackBCar.model}` : 'Cheaper Alternative';
-    document.getElementById('sc-b-sub').textContent = trackBCar
-      ? `${trackBCar.year} · ${trackBCar.condition} · ${trackBCar.engine} — Frees up RM${Math.round(Math.max(0,monthlyDiff)).toLocaleString()}/mo to invest.`
-      : 'Going 35% cheaper frees capital to invest.';
-  } else {
-    // Page 5 header — reality check mode
-    document.getElementById('p5-title').textContent = 'Affordability Reality Check';
-    document.getElementById('p5-desc').textContent = `This car is taking ${pct.toFixed(0)}% of your income. Here's what a smarter alternative looks like — and how much wealth you could build instead.`;
-    // Stat card
-    document.getElementById('wc-stat1-label').textContent = 'Monthly Saving (Cheaper Alternative)';
-    // Chart legend
-    document.getElementById('wc-legend-b').textContent = 'Track B — Smarter Alternative (savings invested at 7% p.a.)';
-    // Track B card
-    document.getElementById('wc-b-label').textContent = '✓ Smarter Alternative';
-    document.getElementById('wc-b-sub').textContent = '/month total ownership cost';
-    document.getElementById('wc-b-invest-label').textContent = 'Monthly saving invested';
-    // Scenario B — show "RECOMMENDED" badge
-    document.getElementById('sc-b-badge').style.display = 'block';
-    document.getElementById('sc-b-title').textContent = trackBCar ? `${trackBCar.make} ${trackBCar.model}` : 'Buy Used (3yr old)';
-    document.getElementById('sc-b-sub').textContent = trackBCar
-      ? `${trackBCar.year} · ${trackBCar.condition} · ${trackBCar.engine} — Biggest depreciation absorbed.`
-      : 'Biggest depreciation already absorbed.';
-  }
-
   // Scenario panel fields
   document.getElementById('sc-a-price').textContent    = fmt(newPrice);
   document.getElementById('sc-a-interest').textContent = fmt(aInterest);
   document.getElementById('sc-a-running').textContent  = fmt(aRunning);
   document.getElementById('sc-a-resale').textContent   = '+'+fmt(aResale);
   document.getElementById('sc-a-total').textContent    = fmt(aTotal);
+  // Track B label update
+  const trackBLabel = state.trackBCar
+    ? `${state.trackBCar.make} ${state.trackBCar.model} (${state.trackBCar.year}, ${state.trackBCar.condition})`
+    : 'Used/Recond (~65% of new price)';
+  const scBTitleEl = document.querySelector('.wc-sc.wc-sc-featured .wc-sc-title');
+  if (scBTitleEl) scBTitleEl.textContent = state.trackBCar
+    ? `${state.trackBCar.make} ${state.trackBCar.model}`
+    : 'Buy Used (3yr old)';
+  const scBSubEl = document.querySelector('.wc-sc.wc-sc-featured .wc-sc-sub');
+  if (scBSubEl) scBSubEl.textContent = state.trackBCar
+    ? `${state.trackBCar.year} · ${state.trackBCar.condition} · ${state.trackBCar.engine} — Biggest depreciation absorbed.`
+    : 'Biggest depreciation already absorbed.';
 
+  // Track B price
   document.getElementById('sc-b-price').textContent    = fmt(usedPrice);
   document.getElementById('sc-b-interest').textContent = fmt(bInterest);
   document.getElementById('sc-b-running').textContent  = fmt(bRunning);
@@ -1448,7 +1330,7 @@ function calcScenarios() {
   document.getElementById('bar-c-val').textContent = fmt(fv5);
 
   // Cache for chart use
-  state.scenarioData = { newPrice, usedPrice, aTotal, bTotal, fv5, monthlyDiff, usedLoan, tc, isAffordable };
+  state.scenarioData = { newPrice, usedPrice, aTotal, bTotal, fv5, monthlyDiff, usedLoan, tc };
 }
 
 // ============================================================
@@ -1586,16 +1468,12 @@ async function callGroq(messages, maxTokens=1000) {
 function buildSystemPrompt() {
   const car = state.selectedCar;
   const tc  = state.trueCost;
-  const pct = state.incomePct || (state.salary>0&&tc ? tc.total/state.salary*100 : 0);
-  const isAffordable = pct <= 30;
+  const pct = (state.salary>0&&tc) ? (tc.total/state.salary*100).toFixed(1) : 'unknown';
   const carName = car ? `${car.make||car.brand} ${car.model} (${car.year}, ${car.condition||car.type})` : 'No car selected';
   const trackBStr = state.trackBCar
-    ? `Cheaper alternative: ${state.trackBCar.make} ${state.trackBCar.model} (${state.trackBCar.year}, ${state.trackBCar.condition}) at RM${state.trackBCar.price.toLocaleString()}`
-    : 'Cheaper alternative: estimated at 65% of selected car price';
-  const affordabilityInstruction = isAffordable
-    ? `IMPORTANT — The user's car costs only ${pct.toFixed(0)}% of their income, which is within the healthy 20–30% range. Do NOT recommend switching to a used car or push them to downgrade. Affirm their decision is financially sound. You may mention the investment opportunity as an interesting perspective (${trackBStr}), but only as "food for thought" — not as a recommendation to change their choice. Focus on long-term wealth building advice instead.`
-    : `IMPORTANT — The user's car costs ${pct.toFixed(0)}% of their income, exceeding the recommended 30% threshold. Be direct about the financial risk. Recommend considering the cheaper alternative: ${trackBStr}. Explain how the monthly savings could be invested to build wealth instead.`;
-  return `You are TrueCost AI, a Malaysian personal finance advisor specialising in car affordability. Speak clearly and directly.\n\nUSER FINANCIAL PROFILE:\n- Salary: RM${state.salary.toLocaleString()}/month\n- Existing loans: RM${state.loans.toLocaleString()}/month\n- Living expenses: RM${state.expenses.toLocaleString()}/month\n- Savings: RM${state.savings.toLocaleString()}\n- Emergency fund: RM${state.emergency.toLocaleString()}\n- Age: ${state.age} | Dependents: ${state.dependents} | Stability: ${state.stability}\n- DTI: ${state.dti.toFixed(1)}%\n- Loan term: ${state.loanTermYears||7} years\n${car ? `\nSELECTED CAR:\n- ${carName}\n- Price: RM${car.price.toLocaleString()} | Engine: ${car.engine||car.engineCC+'cc'} | Body: ${car.bodyType}\n- True monthly cost: RM${tc?Math.round(tc.total).toLocaleString():'?'} (${pct.toFixed(0)}% of income)\n- 5-year total: RM${tc?Math.round(tc.total5yr).toLocaleString():'?'}` : 'No car selected.'}\n\n${affordabilityInstruction}\n\nMalaysian context: experts recommend 20–30% of gross income on total car costs. DTI under 40%. 6 months emergency fund ideal.`;
+    ? `Track B alternative: ${state.trackBCar.make} ${state.trackBCar.model} (${state.trackBCar.year}, ${state.trackBCar.condition}) at RM${state.trackBCar.price.toLocaleString()}`
+    : 'Track B: estimated at 65% of selected car price';
+  return `You are TrueCost AI, a Malaysian personal finance advisor specialising in car affordability. Speak clearly and directly.\n\nUSER FINANCIAL PROFILE:\n- Salary: RM${state.salary.toLocaleString()}/month\n- Existing loans: RM${state.loans.toLocaleString()}/month\n- Living expenses: RM${state.expenses.toLocaleString()}/month\n- Savings: RM${state.savings.toLocaleString()}\n- Emergency fund: RM${state.emergency.toLocaleString()}\n- Age: ${state.age} | Dependents: ${state.dependents} | Stability: ${state.stability}\n- DTI: ${state.dti.toFixed(1)}%\n- Loan term: ${state.loanTermYears||7} years\n${car ? `\nSELECTED CAR (Track A):\n- ${carName}\n- Price: RM${car.price.toLocaleString()} | Engine: ${car.engine||car.engineCC+'cc'} | Body: ${car.bodyType}\n- True monthly cost: RM${tc?Math.round(tc.total).toLocaleString():'?'} (${pct}% of income)\n- 5-year total: RM${tc?Math.round(tc.total5yr).toLocaleString():'?'}\n- ${trackBStr}` : 'No car selected.'}\n\nMalaysian context: max 15–20% of income on car, DTI under 30%, 6 months emergency fund.`;
 }
 
 // ============================================================
@@ -1675,18 +1553,13 @@ populateFilters();
 applyFilters();
 
 function resetFilters() {
-  document.getElementById('filter-brand').value     = '';
-  document.getElementById('filter-model').value     = '';
+  document.getElementById('filter-brand').value = '';
+  document.getElementById('filter-model').value = '';
   document.getElementById('filter-condition').value = '';
-  document.getElementById('filter-body').value      = '';
-  document.getElementById('filter-price').value     = '';
-  document.getElementById('filter-sort').value      = '';
-  document.getElementById('filter-search').value    = '';
-  // Also clear AI picks so normal sort resumes
-  state.aiRecoIds    = [];
-  state.aiRecoReasons = {};
-  document.getElementById('reco-banner-text').textContent = 'Complete Step 2 first, then click to get AI-suggested cars highlighted on the grid below.';
-  document.getElementById('btn-reco-p3').textContent = '✦ Get AI Picks';
+  document.getElementById('filter-body').value = '';
+  document.getElementById('filter-price').value = '';
+  document.getElementById('filter-sort').value = '';
+  document.getElementById('filter-search').value = '';
   currentPage = 1;
   applyFilters();
 }
