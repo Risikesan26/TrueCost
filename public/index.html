@@ -1465,7 +1465,7 @@ async function callGroq(messages, maxTokens=1000) {
   const response = await fetch('/api/chat', {
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({ model:'llama-3.3-70b-versatile', max_tokens:maxTokens, messages })
+    body: JSON.stringify({ model:'llama-3.1-8b-instant', max_tokens:maxTokens, messages })
   });
   if (!response.ok) { const t = await response.text(); throw new Error('API error: '+t.slice(0,120)); }
   const data = await response.json();
