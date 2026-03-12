@@ -1085,7 +1085,7 @@ async function runRecommendationsP3() {
   // If too few, widen the net
   const pool = suitableCars.length >= 6 ? suitableCars : CAR_DATASET.filter(c => c.price <= maxP * 1.2);
   // Shuffle so AI sees variety, not always the same first 40
-  const shuffled = pool.sort(() => Math.random() - 0.5).slice(0, 919);
+  const shuffled = pool.sort(() => Math.random() - 0.5).slice(0, 40);
   const carListContext = shuffled.map(c=>`ID:${c.id} | ${c.make} ${c.model} ${c.variant} (${c.year}, ${c.condition}) | RM${c.price.toLocaleString()} | ${c.engine} ${c.transmission} ${c.bodyType} | ${c.mileage||'New'}`).join('\n');
   const prompt = `${buildSystemPrompt()}\n\nUser's safe car budget: RM${Math.round(state.budget).toLocaleString()}/month. Max car price: RM${Math.round(maxP).toLocaleString()}.\n\nHere are the available cars in their price range:\n${carListContext}\n\nRecommend the 3 best cars that match this user's salary level and lifestyle — do NOT always pick the cheapest. Pick cars appropriate to their income. Respond ONLY with JSON array (no markdown):\n[{"id":2,"reason":"Short reason max 15 words"},{"id":1,"reason":"Short reason"},{"id":4,"reason":"Short reason"}]`;
   
