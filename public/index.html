@@ -574,9 +574,9 @@
         <div class="label">Income Allocation</div>
         <div class="grid-2" style="margin-top:1.25rem;gap:2rem">
           <div>
-            <div class="income-percent text-gold" id="ig-pct">—%</div>
+            <div class="income-percent" id="ig-pct" style="color:var(--text-dim)">—%
             <div style="font-size:0.85rem;color:var(--text-dim);margin-top:0.25rem">of monthly income goes to this car</div>
-            <div style="font-family:var(--mono);font-size:0.7rem;color:var(--text-faint);margin-top:0.5rem">Recommended maximum: 15–20%</div>
+            <div style="font-family:var(--mono);font-size:0.7rem;color:var(--text-faint);margin-top:0.5rem">Comfortable: ≤25% · Caution: 25–30% · High: 30%+</div>
           </div>
           <div>
             <div class="gauge-bar" style="height:10px;margin-top:1rem"><div class="gauge-fill" id="ig-bar" style="width:0%"></div></div>
@@ -1245,11 +1245,29 @@ function calcTrueCost() {
   document.getElementById('cb-total').textContent = fmt(total);
   const pct = state.salary>0?(total/state.salary)*100:0;
   document.getElementById('ig-pct').textContent = pct.toFixed(0)+'%';
-  document.getElementById('ig-bar').style.width = Math.min(100,(pct/40)*100)+'%';
+  document.getElementById('ig-bar').style.width = Math.min(100,(pct/45)*100)+'%';
+  // Bar gradient: solid green up to 25%, blends amber 25-30%, bleeds red above 30%
+  const igBar = document.getElementById('ig-bar');
+  const igPctEl = document.getElementById('ig-pct');
+  if (pct <= 25) {
+    igBar.style.background = 'var(--green)';
+    igPctEl.style.color = 'var(--green)';
+  } else if (pct <= 30) {
+    // Smooth green→amber transition in the 25-30% band
+    const t = ((pct - 25) / 5 * 100).toFixed(0);
+    igBar.style.background = `linear-gradient(90deg, var(--green) 0%, var(--green) ${100-t}%, var(--amber) 100%)`;
+    igPctEl.style.color = 'var(--amber)';
+  } else {
+    // Gradual red creep above 30%, fully red by 40%
+    const redPct = Math.min(100, ((pct - 30) / 10 * 100)).toFixed(0);
+    igBar.style.background = `linear-gradient(90deg, var(--green) 0%, var(--amber) 60%, var(--red) 100%)`;
+    igPctEl.style.color = pct >= 38 ? 'var(--red)' : 'var(--amber)';
+  }
   const safety=document.getElementById('cb-safety'), igAdvice=document.getElementById('ig-advice');
-  if (pct<=20) { safety.className='badge badge-safe'; safety.textContent='✓ SAFE'; igAdvice.textContent='This car fits comfortably within your income.'; igAdvice.style.color='var(--green)'; }
-  else if (pct<=35) { safety.className='badge badge-risky'; safety.textContent='⚠ RISKY'; igAdvice.textContent='Any income disruption could cause financial stress.'; igAdvice.style.color='var(--amber)'; }
-  else { safety.className='badge badge-danger'; safety.textContent='✗ DANGEROUS'; igAdvice.textContent='Over 35% of income on a car will severely limit savings and investment.'; igAdvice.style.color='var(--red)'; }
+  if (pct<=25) { safety.className='badge badge-safe'; safety.textContent='✓ COMFORTABLE'; igAdvice.textContent='Healthy allocation — well within the recommended 20–25% range.'; igAdvice.style.color='var(--green)'; }
+  else if (pct<=30) { safety.className='badge badge-risky'; safety.textContent='⚠ MANAGEABLE'; igAdvice.textContent='Within acceptable range. Most Malaysians spend up to 30% on car costs — manage other expenses carefully.'; igAdvice.style.color='var(--amber)'; }
+  else if (pct<=38) { safety.className='badge badge-danger'; safety.textContent='✗ STRETCHING'; igAdvice.textContent='Above 30% starts to pressure savings. Consider a slightly lower-priced option.'; igAdvice.style.color='var(--red)'; }
+  else { safety.className='badge badge-danger'; safety.textContent='✗ DANGEROUS'; igAdvice.textContent='Over 38% of income on a car will severely limit savings, investments and emergency reserves.'; igAdvice.style.color='var(--red)'; }
 }
 
 // ============================================================
@@ -1531,7 +1549,7 @@ function buildSystemPrompt() {
   const trackBStr = state.trackBCar
     ? `Track B alternative: ${state.trackBCar.make} ${state.trackBCar.model} (${state.trackBCar.year}, ${state.trackBCar.condition}) at RM${state.trackBCar.price.toLocaleString()}`
     : 'Track B: estimated at 65% of selected car price';
-  return `You are TrueCost AI, a Malaysian personal finance advisor specialising in car affordability. Speak clearly and directly.\n\nUSER FINANCIAL PROFILE:\n- Salary: RM${state.salary.toLocaleString()}/month\n- Existing loans: RM${state.loans.toLocaleString()}/month\n- Living expenses: RM${state.expenses.toLocaleString()}/month\n- Savings: RM${state.savings.toLocaleString()}\n- Emergency fund: RM${state.emergency.toLocaleString()}\n- Age: ${state.age} | Dependents: ${state.dependents} | Stability: ${state.stability}\n- DTI: ${state.dti.toFixed(1)}%\n- Loan term: ${state.loanTermYears||7} years\n${car ? `\nSELECTED CAR (Track A):\n- ${carName}\n- Price: RM${car.price.toLocaleString()} | Engine: ${car.engine||car.engineCC+'cc'} | Body: ${car.bodyType}\n- True monthly cost: RM${tc?Math.round(tc.total).toLocaleString():'?'} (${pct}% of income)\n- 5-year total: RM${tc?Math.round(tc.total5yr).toLocaleString():'?'}\n- ${trackBStr}` : 'No car selected.'}\n\nMalaysian context: max 15–20% of income on car, DTI under 30%, 6 months emergency fund.`;
+  return `You are TrueCost AI, a Malaysian personal finance advisor specialising in car affordability. Speak clearly and directly.\n\nUSER FINANCIAL PROFILE:\n- Salary: RM${state.salary.toLocaleString()}/month\n- Existing loans: RM${state.loans.toLocaleString()}/month\n- Living expenses: RM${state.expenses.toLocaleString()}/month\n- Savings: RM${state.savings.toLocaleString()}\n- Emergency fund: RM${state.emergency.toLocaleString()}\n- Age: ${state.age} | Dependents: ${state.dependents} | Stability: ${state.stability}\n- DTI: ${state.dti.toFixed(1)}%\n- Loan term: ${state.loanTermYears||7} years\n${car ? `\nSELECTED CAR (Track A):\n- ${carName}\n- Price: RM${car.price.toLocaleString()} | Engine: ${car.engine||car.engineCC+'cc'} | Body: ${car.bodyType}\n- True monthly cost: RM${tc?Math.round(tc.total).toLocaleString():'?'} (${pct}% of income)\n- 5-year total: RM${tc?Math.round(tc.total5yr).toLocaleString():'?'}\n- ${trackBStr}` : 'No car selected.'}\n\nMalaysian context: experts recommend 20–30% of gross income on total car costs is acceptable. A person earning RM15,000/month can comfortably handle RM2,500–3,000/month in true car costs. DTI should stay under 40%, and 6 months emergency fund is ideal. Do NOT flag a car as unaffordable if its true cost is under 25% of salary.`;
 }
 
 // ============================================================
