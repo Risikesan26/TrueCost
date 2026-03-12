@@ -1131,7 +1131,7 @@ function recalcFinance() {
   const emergencyTarget = state.expenses * 6;
   const emergencyOk = state.emergency >= emergencyTarget;
   const freeSavings = Math.max(0, state.savings - state.emergency);
-  const doeanPayment = freeSavings * 0.3;
+  const downPayment = freeSavings * 0.3;
   const loanTermYrs = state.loanTermYears||7;
   const flatRate = 0.035;
   const loanPrincipal = budget * loanTermMonths / (1 + flatRate * loanTermYrs);
