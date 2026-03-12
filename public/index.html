@@ -625,8 +625,7 @@
     <!-- Tab switcher — fixed: onclick sets active class directly on button elements -->
     <div class="wc-tabs">
       <button class="wc-tab wc-active" id="wc-tab-chart"     onclick="switchWcTab('chart')">📊 Wealth Charts</button>
-      <button class="wc-tab"           id="wc-tab-scenarios" onclick="switchWcTab('scenarios')">🔀 3-Scenario View</button>
-    </div>
+   
 
     <!-- ── PANEL: Wealth Charts ── -->
     <div class="wc-panel wc-visible" id="wc-panel-chart">
@@ -688,72 +687,6 @@
         </div>
       </div>
     </div>
-
-    <!-- ── PANEL: 3-Scenario View ── -->
-    <div class="wc-panel" id="wc-panel-scenarios">
-
-      <div class="wc-scenarios">
-        <!-- Scenario A -->
-        <div class="wc-sc">
-          <div class="wc-sc-letter">A</div>
-          <div class="wc-sc-title">Buy New</div>
-          <div class="wc-sc-sub">Full price, brand new, full warranty.</div>
-          <div class="wc-sc-row"><span class="wc-sc-row-label">Purchase Price</span><span id="sc-a-price" class="text-gold">—</span></div>
-          <div class="wc-sc-row"><span class="wc-sc-row-label">Total Interest Paid</span><span id="sc-a-interest" class="text-amber">—</span></div>
-          <div class="wc-sc-row"><span class="wc-sc-row-label">Running Costs (5yr)</span><span id="sc-a-running">—</span></div>
-          <div class="wc-sc-row"><span class="wc-sc-row-label">Est. Resale Value</span><span id="sc-a-resale" class="text-green">—</span></div>
-          <div class="wc-sc-total"><div class="wc-sc-total-label">Net 5-Year Ownership Cost</div><div class="wc-sc-total-val text-red" id="sc-a-total">—</div></div>
-        </div>
-        <!-- Scenario B -->
-        <div class="wc-sc wc-sc-featured">
-          <div style="font-family:var(--mono);font-size:0.58rem;color:var(--green);letter-spacing:0.1em;margin-bottom:4px" id="sc-b-tag">✦ EXPLORE THIS</div>
-          <div class="wc-sc-letter">B</div>
-          <div class="wc-sc-title" id="sc-b-title">Alternative Option</div>
-          <div class="wc-sc-sub" id="sc-b-sub">A lower-cost path worth knowing about.</div>
-          <div class="wc-sc-row"><span class="wc-sc-row-label">Purchase Price</span><span id="sc-b-price" class="text-gold">—</span></div>
-          <div class="wc-sc-row"><span class="wc-sc-row-label">Total Interest Paid</span><span id="sc-b-interest" class="text-amber">—</span></div>
-          <div class="wc-sc-row"><span class="wc-sc-row-label">Running Costs (5yr)</span><span id="sc-b-running">—</span></div>
-          <div class="wc-sc-row"><span class="wc-sc-row-label">Est. Resale Value</span><span id="sc-b-resale" class="text-green">—</span></div>
-          <div class="wc-sc-total"><div class="wc-sc-total-label">Net 5-Year Ownership Cost</div><div class="wc-sc-total-val text-green" id="sc-b-total">—</div></div>
-        </div>
-        <!-- Scenario C -->
-        <div class="wc-sc">
-          <div class="wc-sc-letter">C</div>
-          <div class="wc-sc-title">Invest the Difference</div>
-          <div class="wc-sc-sub">Cheaper car + invest savings at 7% p.a.</div>
-          <div class="wc-sc-row"><span class="wc-sc-row-label">Monthly Savings vs New</span><span id="sc-c-monthly" class="text-gold">—</span></div>
-          <div class="wc-sc-row"><span class="wc-sc-row-label">Total Invested (5yr)</span><span id="sc-c-invested">—</span></div>
-          <div class="wc-sc-row"><span class="wc-sc-row-label">At 7% Annual Return</span><span id="sc-c-growth" class="text-green">—</span></div>
-          <div class="wc-sc-row"><span class="wc-sc-row-label">Opportunity Cost of New</span><span id="sc-c-opp" class="text-red">—</span></div>
-          <div class="wc-sc-total"><div class="wc-sc-total-label">Portfolio Value After 5 Years</div><div class="wc-sc-total-val text-green" id="sc-c-total">—</div></div>
-        </div>
-      </div>
-
-      <!-- Scenario bar chart -->
-      <div class="wc-bar-chart">
-        <div class="wc-chart-title">5-Year Total Cost Comparison</div>
-        <div class="wc-bar-row">
-          <div class="wc-bar-label">Buy New (A)</div>
-          <div class="wc-bar-track"><div class="wc-bar-fill" id="bar-a" style="width:0%;background:#e05252"><span id="bar-a-val">RM 0</span></div></div>
-        </div>
-        <div class="wc-bar-row">
-          <div class="wc-bar-label" id="bar-b-label">Alternative (B)</div>
-          <div class="wc-bar-track"><div class="wc-bar-fill" id="bar-b" style="width:0%;background:#4caf7d"><span id="bar-b-val">RM 0</span></div></div>
-        </div>
-        <div class="wc-bar-row">
-          <div class="wc-bar-label" style="color:var(--text)">Invest Diff. (C)</div>
-          <div class="wc-bar-track"><div class="wc-bar-fill" id="bar-c" style="width:0%;background:#c9a84c"><span id="bar-c-val">RM 0</span></div></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="bottom-nav">
-      <button class="btn-ghost" onclick="goPage(4)">← Back</button>
-      <button class="btn-primary" onclick="goPage(6)">Get AI Insights →</button>
-    </div>
-  </div>
-</div>
-
 <!-- ============================================================ PAGE 6 ============================================================ -->
 <div id="page-6" class="page pt-nav">
   <div class="container">
@@ -1085,7 +1018,7 @@ async function runRecommendationsP3() {
   // If too few, widen the net
   const pool = suitableCars.length >= 6 ? suitableCars : CAR_DATASET.filter(c => c.price <= maxP * 1.2);
   // Shuffle so AI sees variety, not always the same first 40
-  const shuffled = pool.sort(() => Math.random() - 0.5).slice(0, 40);
+  const shuffled = pool.sort(() => Math.random() - 0.5).slice(0, 919);
   const carListContext = shuffled.map(c=>`ID:${c.id} | ${c.make} ${c.model} ${c.variant} (${c.year}, ${c.condition}) | RM${c.price.toLocaleString()} | ${c.engine} ${c.transmission} ${c.bodyType} | ${c.mileage||'New'}`).join('\n');
   const prompt = `${buildSystemPrompt()}\n\nUser's safe car budget: RM${Math.round(state.budget).toLocaleString()}/month. Max car price: RM${Math.round(maxP).toLocaleString()}.\n\nHere are the available cars in their price range:\n${carListContext}\n\nRecommend the 3 best cars that match this user's salary level and lifestyle — do NOT always pick the cheapest. Pick cars appropriate to their income. Respond ONLY with JSON array (no markdown):\n[{"id":2,"reason":"Short reason max 15 words"},{"id":1,"reason":"Short reason"},{"id":4,"reason":"Short reason"}]`;
   
