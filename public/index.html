@@ -1379,6 +1379,7 @@ const roadtax = engineCC <= 1000 ? 20 : engineCC <= 1300 ? 30 :
 const trackBCar = findTrackBCar(car);
 const usedPrice = trackBCar ? trackBCar.price : Math.round(newPrice * 0.65);
 state.trackBCar = trackBCar;
+renderTrackACarCard();
 renderTrackBCarCard(); // ← add this
 // Calculate Track B costs using actual car's engine size if available
 const trackBEngineCC = trackBCar ? (trackBCar.engine > 50 ? trackBCar.engine : trackBCar.engineCC || 1500) : (engineCC * 0.9);
