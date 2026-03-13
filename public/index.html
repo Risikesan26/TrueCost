@@ -579,7 +579,7 @@
           </div>
           <div>
             <div class="gauge-bar" style="height:10px;margin-top:1rem"><div class="gauge-fill" id="ig-bar" style="width:0%"></div></div>
-            <div class="gauge-labels" style="margin-top:0.5rem"><span>0%</span><span>20%</span><span>40%+</span></div>
+            <div class="gauge-labels" style="margin-top:0.5rem"><span>0%</span><span>25%</span><span>30%+</span></div>
             <div id="ig-advice" style="margin-top:1rem;font-size:0.8rem;color:var(--text-dim);line-height:1.5"></div>
           </div>
         </div>
@@ -1214,11 +1214,27 @@ function calcTrueCost() {
   document.getElementById('ig-pct').textContent = pct.toFixed(0)+'%';
   document.getElementById('ig-bar').style.width = Math.min(100,(pct/40)*100)+'%';
   const safety=document.getElementById('cb-safety'), igAdvice=document.getElementById('ig-advice');
-  if (pct<=20) { safety.className='badge badge-safe'; safety.textContent='✓ SAFE'; igAdvice.textContent='This car fits comfortably within your income.'; igAdvice.style.color='var(--green)'; }
-  else if (pct<=35) { safety.className='badge badge-risky'; safety.textContent='⚠ RISKY'; igAdvice.textContent='Any income disruption could cause financial stress.'; igAdvice.style.color='var(--amber)'; }
-  else { safety.className='badge badge-danger'; safety.textContent='✗ DANGEROUS'; igAdvice.textContent='Over 35% of income on a car will severely limit savings and investment.'; igAdvice.style.color='var(--red)'; }
-}
 
+// Updated thresholds: 0-25% green, 25-30% yellow, 30%+ red
+  if (pct<=25) { 
+  safety.className='badge badge-safe'; 
+  safety.textContent='✓ SAFE'; 
+  igAdvice.textContent='This car fits comfortably within the recommended 20-30% guideline.'; 
+  igAdvice.style.color='var(--green)'; 
+}
+else if (pct<=30) { 
+  safety.className='badge badge-risky'; 
+  safety.textContent='⚠ ACCEPTABLE'; 
+  igAdvice.textContent='At the upper limit of financial advisors\' 30% guideline. Monitor your budget carefully.'; 
+  igAdvice.style.color='var(--amber)'; 
+}
+else { 
+  safety.className='badge badge-danger'; 
+  safety.textContent='✗ OVER BUDGET'; 
+  igAdvice.textContent='Exceeds the 30% guideline. This could strain your finances and limit savings.'; 
+  igAdvice.style.color='var(--red)'; 
+}
+}
 // ============================================================
 // FIND TRACK B CAR — cheapest alternative from dataset
 // ============================================================
@@ -1481,7 +1497,7 @@ function buildSystemPrompt() {
   const trackBStr = state.trackBCar
     ? `Track B alternative: ${state.trackBCar.make} ${state.trackBCar.model} (${state.trackBCar.year}, ${state.trackBCar.condition}) at RM${state.trackBCar.price.toLocaleString()}`
     : 'Track B: estimated at 65% of selected car price';
-  return `You are TrueCost AI, a Malaysian personal finance advisor specialising in car affordability. Speak clearly and directly.\n\nUSER FINANCIAL PROFILE:\n- Salary: RM${state.salary.toLocaleString()}/month\n- Existing loans: RM${state.loans.toLocaleString()}/month\n- Living expenses: RM${state.expenses.toLocaleString()}/month\n- Savings: RM${state.savings.toLocaleString()}\n- Emergency fund: RM${state.emergency.toLocaleString()}\n- Age: ${state.age} | Dependents: ${state.dependents} | Stability: ${state.stability}\n- DTI: ${state.dti.toFixed(1)}%\n- Loan term: ${state.loanTermYears||7} years\n${car ? `\nSELECTED CAR (Track A):\n- ${carName}\n- Price: RM${car.price.toLocaleString()} | Engine: ${car.engine||car.engineCC+'cc'} | Body: ${car.bodyType}\n- True monthly cost: RM${tc?Math.round(tc.total).toLocaleString():'?'} (${pct}% of income)\n- 5-year total: RM${tc?Math.round(tc.total5yr).toLocaleString():'?'}\n- ${trackBStr}` : 'No car selected.'}\n\nMalaysian context: max 20–30% of income on car, DTI under 30%, 6 months emergency fund.`;
+  return `You are TrueCost AI, a Malaysian personal finance advisor specialising in car affordability. Speak clearly and directly.\n\nUSER FINANCIAL PROFILE:\n- Salary: RM${state.salary.toLocaleString()}/month\n- Existing loans: RM${state.loans.toLocaleString()}/month\n- Living expenses: RM${state.expenses.toLocaleString()}/month\n- Savings: RM${state.savings.toLocaleString()}\n- Emergency fund: RM${state.emergency.toLocaleString()}\n- Age: ${state.age} | Dependents: ${state.dependents} | Stability: ${state.stability}\n- DTI: ${state.dti.toFixed(1)}%\n- Loan term: ${state.loanTermYears||7} years\n${car ? `\nSELECTED CAR (Track A):\n- ${carName}\n- Price: RM${car.price.toLocaleString()} | Engine: ${car.engine||car.engineCC+'cc'} | Body: ${car.bodyType}\n- True monthly cost: RM${tc?Math.round(tc.total).toLocaleString():'?'} (${pct}% of income)\n- 5-year total: RM${tc?Math.round(tc.total5yr).toLocaleString():'?'}\n- ${trackBStr}` : 'No car selected.'}\n\nMalaysian financial advisor guidelines: Car expenses should be 20-30% of monthly income. 0-25% is SAFE and comfortable. 25-30% is ACCEPTABLE but at upper limit. Above 30% is concerning. DTI should stay under 40% (ideally under 30%). Maintain 6 months emergency fund. Be realistic and supportive - someone earning RM15,000/month can comfortably afford RM2,500-3,000/month in true car costs.`;
 }
 
 // ============================================================
