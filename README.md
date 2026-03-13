@@ -75,26 +75,26 @@ Simply open `index.html` in any modern web browser.
 
 
 ---
-🧠 AI Implementation
+## 🧠 AI Implementation
+
 TrueCost integrates advanced AI to transform raw financial data into personalized coaching.
 
-1. AI Runtime Engine (Groq API)
-The application utilizes the Groq API powered by the llama-3.3-70b-versatile model. To ensure accuracy and eliminate "hallucinations," the system uses a math-first architecture:
+### **1. AI Runtime Engine (Groq API)**
 
-Smart Recommendation: Instead of searching the entire 919-car database via AI, the system uses a deterministic JavaScript filter to find cars within 1.5x of the user’s safe budget. This filtered list is then passed to the AI to select the top 3 best lifestyle matches.
+The application utilizes the **Groq API** powered by the `llama-3.3-70b-versatile` model. To ensure accuracy and eliminate "hallucinations," the system uses a **math-first architecture**:
 
-Context-Aware Advisory: The AI receives the user's specific financial profile (salary, DTI, dependents) and generates a structured verdict, risk assessment, and safer alternatives.
+* **Smart Recommendation:** Instead of searching the entire 919-car database via AI, the system uses a deterministic JavaScript filter to find cars within **1.5x of the user’s safe budget**. This filtered list is then passed to the AI to select the top 3 best lifestyle matches.
+* **Context-Aware Advisory:** The AI receives the user's specific financial profile (salary, DTI, dependents) and generates a structured verdict, risk assessment, and safer alternatives.
+* **Interactive Advisor:** A rolling **8-message context window** allows users to ask follow-up questions about their specific results in real-time.
 
-Interactive Advisor: A rolling 8-message context window allows users to ask follow-up questions about their specific results in real-time.
+### **2. AI-Assisted Development**
 
-2. AI-Assisted Development
-The team leveraged Claude (Anthropic) during the engineering phase for:
+The team leveraged **Claude (Anthropic)** during the engineering phase for:
 
-Formula Validation: Perfecting the compound interest models for the Wealth Gap analysis.
+* **Formula Validation:** Perfecting the compound interest models for the Wealth Gap analysis.
+* **SVG Engineering:** Developing the custom programmatic logic for dynamic chart rendering.
+* **Prompt Engineering:** Designing system instructions that adapt the AI's tone based on the user's risk level (e.g., providing more cautious advice for high-risk profiles).
 
-SVG Engineering: Developing the custom programmatic logic for dynamic chart rendering.
-
-Prompt Engineering: Designing system instructions that adapt the AI's tone based on the user's risk level (e.g., providing more cautious advice for high-risk profiles).
 
 ---
 ## 👥 Team Eliza
