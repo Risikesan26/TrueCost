@@ -1165,12 +1165,13 @@ barEl.style.width = barWidth + '%';
 
 // Gradient positions based on where thresholds fall on the BAR
 const g25 = (25 / 40) * 100; // 62.5% of bar = 25% income
-const g40 = (40 / 40) * 100; // 100% of bar = 40% income
+const g30 = (30 / 40) * 100; // 75% of bar = 30% income
 
 barEl.style.background = `linear-gradient(to right, 
   var(--green) 0%, 
-  var(--amber) ${g25}%, 
-  var(--red) ${g40}%
+  var(--green) ${g25}%, 
+  var(--amber) ${g25 + 5}%, 
+  var(--red) ${g30}%
 )`;
   const safety=document.getElementById('cb-safety'), igAdvice=document.getElementById('ig-advice');
 
