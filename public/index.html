@@ -893,7 +893,12 @@ function goPage(n) {
     else if (i + 1 < n) s.classList.add('done');
   });
   if (n === 4) calcTrueCost();
-  if (n === 5) { calcScenarios(); drawWealthCharts(); updateP5Framing(); }
+  if (n === 5) { 
+  calcTrueCost(); // Ensure true cost is calculated first
+  calcScenarios(); 
+  drawWealthCharts(); 
+  updateP5Framing(); 
+}
   if (n === 6) buildInsights();
 }
 
@@ -1341,12 +1346,15 @@ const usedPrice = trackBCar ? trackBCar.price : Math.round(newPrice * 0.65);
 state.trackBCar = trackBCar;
 
 // Calculate Track B costs using actual car's engine size if available
+// Calculate Track B costs using actual car's engine size if available
 const trackBEngineCC = trackBCar ? (trackBCar.engine > 50 ? trackBCar.engine : trackBCar.engineCC || 1500) : (engineCC * 0.9);
 const trackBFuel = trackBEngineCC <= 1000 ? 380 : trackBEngineCC <= 1300 ? 480 : trackBEngineCC <= 1500 ? 580 : trackBEngineCC <= 2000 ? 700 : 900;
+const trackBRoadtax = trackBEngineCC <= 1000 ? 20 : trackBEngineCC <= 1300 ? 30 : trackBEngineCC <= 1500 ? 45 : trackBEngineCC <= 2000 ? 70 : 100;
+const trackBInsurance = (usedPrice * 0.024) / 12;
 
 const usedLoan  = loanPayment(usedPrice*0.9, 0.045, 84);
 const bInterest = (usedLoan*84) - (usedPrice*0.9);
-const bRunning  = (trackBFuel + (usedPrice*0.024/12) + roadtax + tc.maint*1.3)*60;
+const bRunning  = (trackBFuel + trackBInsurance + trackBRoadtax + tc.maint*1.3)*60;
   const bResale   = Math.round(usedPrice*0.45);
   const bTotal    = usedPrice*0.9 + bInterest + bRunning - bResale;
 
