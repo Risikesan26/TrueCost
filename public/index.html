@@ -1255,67 +1255,42 @@ function findTrackBCar(selectedCar) {
   const price = selectedCar.price;
   const make  = selectedCar.make || selectedCar.brand;
   const model = selectedCar.model;
-  const bodyType = selectedCar.bodyType;
 
-  let candidates = [];
 
-  // Strategy 1: Same make + model, USED only, cheaper
-  candidates = CAR_DATASET.filter(c =>
-    c.make === make &&
-    c.model === model &&
-    c.condition === 'Used' &&
-    c.price < price &&
-    c.id !== selectedCar.id
-  );
-  if (candidates.length > 0) {
-    // Pick the one closest to selected car price (most similar)
-    candidates.sort((a, b) => Math.abs(price - a.price) - Math.abs(price - b.price));
-    return candidates[0];
-  }
+  // 1. Same make+model, USED only, cheaper
+let candidates = CAR_DATASET.filter(c =>
+  c.make === make &&
+  c.model === model &&
+  c.condition === 'Used' &&
+  c.price < price &&
+  c.id !== selectedCar.id
+);
 
-  // Strategy 2: Same make + same body type, USED only, within 40-80% price range
-  candidates = CAR_DATASET.filter(c =>
-    c.make === make &&
-    c.bodyType === bodyType &&
-    c.condition === 'Used' &&
-    c.price >= price * 0.40 &&
-    c.price <= price * 0.80 &&
-    c.id !== selectedCar.id
-  );
-  if (candidates.length > 0) {
-    // Pick the highest priced one (best quality in the range)
-    candidates.sort((a, b) => b.price - a.price);
-    return candidates[0];
-  }
+// 2. Same make, same body type, USED only, cheaper
+candidates = CAR_DATASET.filter(c =>
+  c.make === make &&
+  c.bodyType === selectedCar.bodyType &&
+  c.condition === 'Used' &&
+  c.price < price &&
+  c.id !== selectedCar.id
+);
 
-  // Strategy 3: Same body type (any make), USED only, within 40-75% price range
-  candidates = CAR_DATASET.filter(c =>
-    c.bodyType === bodyType &&
-    c.condition === 'Used' &&
-    c.price >= price * 0.40 &&
-    c.price <= price * 0.75 &&
-    c.id !== selectedCar.id
-  );
-  if (candidates.length > 0) {
-    // Pick the one with best value (highest price in range = newer/better condition)
-    candidates.sort((a, b) => b.price - a.price);
-    return candidates[0];
-  }
+// 3. Same body type any make, USED only
+candidates = CAR_DATASET.filter(c =>
+  c.bodyType === selectedCar.bodyType &&
+  c.condition === 'Used' &&
+  c.price >= price * 0.40 &&
+  c.price < price * 0.80 &&
+  c.id !== selectedCar.id
+);
 
-  // Strategy 4: Fallback - any USED car within 50-70% price range
-  candidates = CAR_DATASET.filter(c =>
-    c.condition === 'Used' &&
-    c.price >= price * 0.50 &&
-    c.price <= price * 0.70 &&
-    c.id !== selectedCar.id
-  );
-  if (candidates.length > 0) {
-    candidates.sort((a, b) => b.price - a.price);
-    return candidates[0];
-  }
+// 4. Fallback: any USED cheaper than 70%
+candidates = CAR_DATASET.filter(c =>
+  c.condition === 'Used' &&
+  c.price < price * 0.70 &&
+  c.id !== selectedCar.id
+);
 
-  // No suitable car found - return null (will use 65% estimate)
-  return null;
 }
 
 // ============================================================
@@ -1333,18 +1308,15 @@ function calcScenarios() {
   const aResale   = Math.round(newPrice*0.45);
   const aTotal    = newPrice*0.9 + aInterest + aRunning - aResale;
 
-// Track B: find a cheaper alternative from dataset
-const trackBCar = findTrackBCar(car);
-const usedPrice = trackBCar ? trackBCar.price : Math.round(newPrice * 0.65);
-state.trackBCar = trackBCar;
+  // Track B: find a cheaper alternative from dataset
+  // Priority: same model (used/recond), else same make, else 65% fallback
+  const trackBCar = findTrackBCar(car);
+  const usedPrice = trackBCar ? trackBCar.price : Math.round(newPrice * 0.65);
+  state.trackBCar = trackBCar; // store for display
 
-// Calculate Track B costs using actual car's engine size if available
-const trackBEngineCC = trackBCar ? (trackBCar.engine > 50 ? trackBCar.engine : trackBCar.engineCC || 1500) : (engineCC * 0.9);
-const trackBFuel = trackBEngineCC <= 1000 ? 380 : trackBEngineCC <= 1300 ? 480 : trackBEngineCC <= 1500 ? 580 : trackBEngineCC <= 2000 ? 700 : 900;
-
-const usedLoan  = loanPayment(usedPrice*0.9, 0.045, 84);
-const bInterest = (usedLoan*84) - (usedPrice*0.9);
-const bRunning  = (trackBFuel + (usedPrice*0.024/12) + roadtax + tc.maint*1.3)*60;
+  const usedLoan  = loanPayment(usedPrice*0.9, 0.045, 84);
+  const bInterest = (usedLoan*84) - (usedPrice*0.9);
+  const bRunning  = (tc.fuel + tc.insurance*0.7 + tc.roadtax + tc.maint*1.3)*60;
   const bResale   = Math.round(usedPrice*0.45);
   const bTotal    = usedPrice*0.9 + bInterest + bRunning - bResale;
 
@@ -1361,25 +1333,17 @@ const bRunning  = (trackBFuel + (usedPrice*0.024/12) + roadtax + tc.maint*1.3)*6
   document.getElementById('sc-a-resale').textContent   = '+'+fmt(aResale);
   document.getElementById('sc-a-total').textContent    = fmt(aTotal);
   // Track B label update
-const savingsPct = state.trackBCar ? Math.round((1 - usedPrice/newPrice) * 100) : 35;
-const trackBLabel = state.trackBCar
-  ? `${state.trackBCar.make} ${state.trackBCar.model} (${state.trackBCar.year}, ${state.trackBCar.condition}) — ${savingsPct}% cheaper`
-  : `Used/Recond (~65% of new price)`;
-const scBTitleEl = document.querySelector('.wc-sc.wc-sc-featured .wc-sc-title');
-if (scBTitleEl) scBTitleEl.textContent = state.trackBCar
-  ? `${state.trackBCar.make} ${state.trackBCar.model}`
-  : 'Buy Used (3yr old)';
-  
-const scBSubEl = document.querySelector('.wc-sc.wc-sc-featured .wc-sc-sub');
-if (scBSubEl) {
-  if (state.trackBCar) {
-    const engineStr = state.trackBCar.engine || `${state.trackBCar.engineCC}cc`;
-    const savingsPct = Math.round((1 - usedPrice/newPrice) * 100);
-    scBSubEl.textContent = `${state.trackBCar.year} · ${state.trackBCar.condition} · ${engineStr} — Save ${savingsPct}%, depreciation absorbed.`;
-  } else {
-    scBSubEl.textContent = 'Biggest depreciation already absorbed.';
-  }
-}
+  const trackBLabel = state.trackBCar
+    ? `${state.trackBCar.make} ${state.trackBCar.model} (${state.trackBCar.year}, ${state.trackBCar.condition})`
+    : 'Used/Recond (~65% of new price)';
+  const scBTitleEl = document.querySelector('.wc-sc.wc-sc-featured .wc-sc-title');
+  if (scBTitleEl) scBTitleEl.textContent = state.trackBCar
+    ? `${state.trackBCar.make} ${state.trackBCar.model}`
+    : 'Buy Used (3yr old)';
+  const scBSubEl = document.querySelector('.wc-sc.wc-sc-featured .wc-sc-sub');
+  if (scBSubEl) scBSubEl.textContent = state.trackBCar
+    ? `${state.trackBCar.year} · ${state.trackBCar.condition} · ${state.trackBCar.engine} — Biggest depreciation absorbed.`
+    : 'Biggest depreciation already absorbed.';
 
   // Track B price
   document.getElementById('sc-b-price').textContent    = fmt(usedPrice);
@@ -1515,9 +1479,9 @@ function buildInsights() {
   if (!car || !tc || !state.salary) return;
   const pct = (tc.total/state.salary*100).toFixed(0);
   const cName = `${car.make||car.brand} ${car.model}`;
-const trackBInfo = state.trackBCar
-  ? `Track B: ${state.trackBCar.make} ${state.trackBCar.model} (${state.trackBCar.year}) @ RM${state.trackBCar.price.toLocaleString()} — ${Math.round((1 - state.trackBCar.price/car.price)*100)}% cheaper`
-  : 'Track B: ~65% price estimate';
+  const trackBInfo = state.trackBCar
+    ? `Track B: ${state.trackBCar.make} ${state.trackBCar.model} @ RM${state.trackBCar.price.toLocaleString()}`
+    : 'Track B: ~65% price estimate';
   document.getElementById('chat-context-summary').innerHTML =
     `<strong style="color:var(--gold)">${cName}</strong> (${car.condition||car.type}) · RM${car.price.toLocaleString()}<br>Salary: RM${state.salary.toLocaleString()} · DTI: ${state.dti.toFixed(0)}%<br>True monthly cost: RM${Math.round(tc.total).toLocaleString()} (${pct}% of income)<br><span style="color:var(--green);font-size:0.7rem">${trackBInfo}</span>`;
 }
