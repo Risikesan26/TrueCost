@@ -4,7 +4,10 @@
 
 Developed for **BorNEO HackWknd**, TrueCost bridges the gap between "what you can borrow" and "what you can actually afford."
 
-[![Demo Video](https://youtu.be/LG_GxtVKr9Q)🌐_Live_Demo-Visit_Site-blue?style=for-the-badge)](https://borneo-2.vercel.app/)
+[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-Visit_Site-blue?style=for-the-badge)](https://borneo-2.vercel.app/)
+
+[![Demo Video](https://img.shields.io/badge/🎥_Demo_Video-Watch-red?style=for-the-badge)](https://youtu.be/LG_GxtVKr9Q)
+
 ---
 
 ## 🎯 Sustainable Development Goals (SDG)
