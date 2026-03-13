@@ -1159,19 +1159,20 @@ document.getElementById('ig-pct').textContent = pct.toFixed(0)+'%';
 
 // Set bar width and color based on percentage
 const barEl = document.getElementById('ig-bar');
+
 // Scale: 0% income = 0% bar, 40%+ income = 100% bar
 const barWidth = Math.min(100, (pct / 40) * 100);
 barEl.style.width = barWidth + '%';
 
-// Gradient positions based on where thresholds fall on the BAR
-const g25 = (25 / 40) * 100; // 62.5% of bar = 25% income
-const g30 = (30 / 40) * 100; // 75% of bar = 30% income
+// Convert threshold positions relative to CURRENT bar width
+const g25 = (25 / pct) * 100;
+const g30 = (30 / pct) * 100;
 
-barEl.style.background = `linear-gradient(to right, 
-  var(--green) 0%, 
-  var(--green) ${g25}%, 
-  var(--amber) ${g25 + 5}%, 
-  var(--red) ${g30}%
+barEl.style.background = `linear-gradient(to right,
+  var(--green) 0%,
+  var(--green) ${Math.min(g25,100)}%,
+  var(--amber) ${Math.min(g30,100)}%,
+  var(--red) 100%
 )`;
   const safety=document.getElementById('cb-safety'), igAdvice=document.getElementById('ig-advice');
 
