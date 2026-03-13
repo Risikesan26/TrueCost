@@ -1255,7 +1255,7 @@ else {
 // ============================================================
 // FIND TRACK B CAR — cheapest alternative from dataset
 // ============================================================
-function findTrackBCar(selectedCar) {function findTrackBCar(selectedCar) {
+function findTrackBCar(selectedCar) {
   if (!selectedCar) return null;
   const price = selectedCar.price;
   const make  = selectedCar.make || selectedCar.brand;
@@ -1321,7 +1321,7 @@ function findTrackBCar(selectedCar) {function findTrackBCar(selectedCar) {
 
   // No suitable car found - return null (will use 65% estimate)
   return null;
-}}
+}
 
 // ============================================================
 // SCENARIO DATA (feeds both panels)
@@ -1337,6 +1337,9 @@ function calcScenarios() {
   const aRunning  = (tc.fuel+tc.insurance+tc.roadtax+tc.maint)*60;
   const aResale   = Math.round(newPrice*0.45);
   const aTotal    = newPrice*0.9 + aInterest + aRunning - aResale;
+  const engineCC = car.engine > 50 ? car.engine : car.engineCC || 1500;
+const roadtax = engineCC <= 1000 ? 20 : engineCC <= 1300 ? 30 : 
+                engineCC <= 1500 ? 45 : engineCC <= 2000 ? 70 : 100;
 
   // Track B: find a cheaper alternative from dataset
   // Priority: same model (used/recond), else same make, else 65% fallback
@@ -1346,15 +1349,12 @@ const usedPrice = trackBCar ? trackBCar.price : Math.round(newPrice * 0.65);
 state.trackBCar = trackBCar;
 
 // Calculate Track B costs using actual car's engine size if available
-// Calculate Track B costs using actual car's engine size if available
 const trackBEngineCC = trackBCar ? (trackBCar.engine > 50 ? trackBCar.engine : trackBCar.engineCC || 1500) : (engineCC * 0.9);
 const trackBFuel = trackBEngineCC <= 1000 ? 380 : trackBEngineCC <= 1300 ? 480 : trackBEngineCC <= 1500 ? 580 : trackBEngineCC <= 2000 ? 700 : 900;
-const trackBRoadtax = trackBEngineCC <= 1000 ? 20 : trackBEngineCC <= 1300 ? 30 : trackBEngineCC <= 1500 ? 45 : trackBEngineCC <= 2000 ? 70 : 100;
-const trackBInsurance = (usedPrice * 0.024) / 12;
 
 const usedLoan  = loanPayment(usedPrice*0.9, 0.045, 84);
 const bInterest = (usedLoan*84) - (usedPrice*0.9);
-const bRunning  = (trackBFuel + trackBInsurance + trackBRoadtax + tc.maint*1.3)*60;
+const bRunning  = (trackBFuel + (usedPrice*0.024/12) + roadtax + tc.maint*1.3)*60;
   const bResale   = Math.round(usedPrice*0.45);
   const bTotal    = usedPrice*0.9 + bInterest + bRunning - bResale;
 
@@ -1636,10 +1636,10 @@ applyFilters();
 
 // Dynamic Page 5 framing based on whether car was AI-picked or over budget
 function updateP5Framing() {
-  const isAiPicked = state.selectedCar && state.aiRecoIds.includes(state.selectedCar);
-  const car = state.selectedCar ? CAR_DATASET.find(c => c.id === state.selectedCar) : null;
-  const tc = car ? calcTrueCost(car) : null;
-  const pct = tc && state.salary ? (tc.total / state.salary) * 100 : 0;
+  const isAiPicked = state.selectedCar && state.aiRecoIds.includes(state.selectedCar.id);
+const car = state.selectedCar; // already the object
+const pct = state.trueCost && state.salary 
+  ? (state.trueCost.total / state.salary) * 100 : 0;
   const isOverBudget = pct > 30;
 
   if (isAiPicked && !isOverBudget) {
