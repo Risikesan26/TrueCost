@@ -622,12 +622,6 @@
       </div>
     </div>
 
-    <!-- Tab switcher — fixed: onclick sets active class directly on button elements -->
-    <div class="wc-tabs">
-      <button class="wc-tab wc-active" id="wc-tab-chart"     onclick="switchWcTab('chart')">📊 Wealth Charts</button>
-      <button class="wc-tab"           id="wc-tab-scenarios" onclick="switchWcTab('scenarios')">🔀 3-Scenario View</button>
-    </div>
-
     <!-- ── PANEL: Wealth Charts ── -->
     <div class="wc-panel wc-visible" id="wc-panel-chart">
 
@@ -1377,54 +1371,11 @@ const bRunning  = (trackBFuel + (usedPrice*0.024/12) + roadtax + tc.maint*1.3)*6
   const r7          = 0.07/12;
   const fv5         = Math.max(0, monthlyDiff) * ((Math.pow(1+r7,60)-1)/r7);
   const cOpp        = aTotal - bTotal;
-
-  // Scenario panel fields
-  document.getElementById('sc-a-price').textContent    = fmt(newPrice);
-  document.getElementById('sc-a-interest').textContent = fmt(aInterest);
-  document.getElementById('sc-a-running').textContent  = fmt(aRunning);
-  document.getElementById('sc-a-resale').textContent   = '+'+fmt(aResale);
-  document.getElementById('sc-a-total').textContent    = fmt(aTotal);
-  // Track B label update
- const savingsPct = state.trackBCar ? Math.round((1 - usedPrice/newPrice) * 100) : 35;
-const trackBLabel = state.trackBCar
-  ? `${state.trackBCar.make} ${state.trackBCar.model} (${state.trackBCar.year}, ${state.trackBCar.condition}) — ${savingsPct}% cheaper`
-  : `Used/Recond (~65% of new price)`;
-  const scBTitleEl = document.querySelector('.wc-sc.wc-sc-featured .wc-sc-title');
-if (scBTitleEl) scBTitleEl.textContent = state.trackBCar
-  ? `${state.trackBCar.make} ${state.trackBCar.model}`
-  : 'Buy Used (3yr old)';
-  
-const scBSubEl = document.querySelector('.wc-sc.wc-sc-featured .wc-sc-sub');
-if (scBSubEl) {
-  if (state.trackBCar) {
-    const engineStr = state.trackBCar.engine || `${state.trackBCar.engineCC}cc`;
-    const savingsPct = Math.round((1 - usedPrice/newPrice) * 100);
-    scBSubEl.textContent = `${state.trackBCar.year} · ${state.trackBCar.condition} · ${engineStr} — Save ${savingsPct}%, depreciation absorbed.`;
-  } else {
-    scBSubEl.textContent = 'Biggest depreciation already absorbed.';
-  }
+  // Update the Track B label in the wealth chart panel
+const wbLabelEl = document.getElementById('wc-b-label');
+if (wbLabelEl && state.trackBCar) {
+  wbLabelEl.textContent = `Track B — ${state.trackBCar.make} ${state.trackBCar.model} (${state.trackBCar.year})`;
 }
-
-  // Track B price
-  document.getElementById('sc-b-price').textContent    = fmt(usedPrice);
-  document.getElementById('sc-b-interest').textContent = fmt(bInterest);
-  document.getElementById('sc-b-running').textContent  = fmt(bRunning);
-  document.getElementById('sc-b-resale').textContent   = '+'+fmt(bResale);
-  document.getElementById('sc-b-total').textContent    = fmt(bTotal);
-  document.getElementById('sc-c-monthly').textContent  = fmt(Math.max(0,monthlyDiff));
-  document.getElementById('sc-c-invested').textContent = fmt(Math.max(0,invested));
-  document.getElementById('sc-c-growth').textContent   = fmt(Math.max(0,fv5));
-  document.getElementById('sc-c-opp').textContent      = fmt(Math.max(0,cOpp));
-  document.getElementById('sc-c-total').textContent    = fmt(Math.max(0,fv5));
-
-  const maxVal = Math.max(aTotal,bTotal,fv5,1);
-  document.getElementById('bar-a').style.width = (aTotal/maxVal*95)+'%';
-  document.getElementById('bar-b').style.width = (bTotal/maxVal*95)+'%';
-  document.getElementById('bar-c').style.width = (fv5/maxVal*95)+'%';
-  document.getElementById('bar-a-val').textContent = fmt(aTotal);
-  document.getElementById('bar-b-val').textContent = fmt(bTotal);
-  document.getElementById('bar-c-val').textContent = fmt(fv5);
-
   // Cache for chart use
   state.scenarioData = { newPrice, usedPrice, aTotal, bTotal, fv5, monthlyDiff, usedLoan, tc };
 }
