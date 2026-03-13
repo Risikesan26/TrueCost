@@ -1168,13 +1168,10 @@ barEl.style.width = barWidth + '%';
 const g25 = (25 / 40) * 100; // 62.5% bar position = 25% income
 const g30 = (30 / 40) * 100; // 75% bar position = 30% income
 
-barEl.style.background = `linear-gradient(to right, 
+bbarEl.style.background = `linear-gradient(to right, 
   var(--green) 0%, 
-  var(--green) ${g25}%, 
-  var(--amber) ${g25}%, 
-  var(--amber) ${g30}%, 
-  var(--red) ${g30}%, 
-  var(--red) 100%
+  var(--amber) 25%, 
+  var(--red) 40%
 )`;
   const safety=document.getElementById('cb-safety'), igAdvice=document.getElementById('ig-advice');
 
