@@ -667,6 +667,7 @@
       <div class="wc-tracks">
         <div class="wc-track wc-track-a">
           <div class="wc-track-label" style="color:#e05252">Track A — New Car</div>
+           <div id="tracka-car-card" style="margin-bottom: 16px;"></div>
           <div class="wc-track-emi" id="wc-a-emi" style="color:#e05252">RM —</div>
           <div class="wc-track-sub">/month total ownership cost</div>
           <div style="font-family:var(--mono);font-size:0.65rem;color:var(--text-faint)">Invested monthly</div>
@@ -1266,6 +1267,29 @@ function findTrackBCar(selectedCar) {
   // No suitable car found - return null (will use 65% estimate)
   return null;
 }
+
+function renderTrackACarCard() {
+  const car = state.selectedCar;
+  let container = document.getElementById('tracka-car-card');
+  if (!container || !car) return;
+
+  const condBadgeColor = car.condition === 'New' ? '#c9a84c' : car.condition === 'Recond' ? '#4c8ecf' : '#4caf7d';
+  
+  container.innerHTML = `
+    <div style="background:#1a1a1a;border:1px solid #2a2a2a;border-radius:8px;padding:12px;display:flex;gap:12px;align-items:center">
+      <div style="font-size:2.5rem;flex-shrink:0">${bodyEmoji(car.bodyType)}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-family:var(--sans);font-size:0.9rem;font-weight:600;margin-bottom:2px;color:var(--text)">${car.make} ${car.model}</div>
+        <div style="font-family:var(--sans);font-size:0.7rem;color:var(--text-dim);margin-bottom:4px">${car.year} · ${car.variant}</div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <span style="font-family:var(--mono);font-size:0.85rem;color:var(--gold);font-weight:600">RM ${car.price.toLocaleString()}</span>
+          <span style="font-family:var(--mono);font-size:0.55rem;font-weight:700;letter-spacing:0.08em;padding:2px 6px;border-radius:3px;background:${condBadgeColor};color:#000">${car.condition.toUpperCase()}</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 function renderTrackBCarCard() {
   const car = state.trackBCar;
   const selectedPrice = state.selectedCar ? state.selectedCar.price : 0;
