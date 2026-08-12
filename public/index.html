@@ -1556,15 +1556,36 @@ function buildInsights() {
 // GROQ API
 // ============================================================
 async function callGroq(messages, maxTokens=1000) {
-  const response = await fetch('/api/chat', {
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({ model:'llama-3.3-70b-versatile', max_tokens:maxTokens, messages })
-  });
-  if (!response.ok) { const t = await response.text(); throw new Error('API error: '+t.slice(0,120)); }
-  const data = await response.json();
-  if (data.error) throw new Error(data.error.message);
-  return data.choices?.[0]?.message?.content || '';
+  const modelName = 'llama-3.3-70b-versatile';
+  try {
+    const response = await fetch('/api/chat', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ model: modelName, max_tokens: maxTokens, messages })
+    });
+    if (response.ok) {
+      const data = await response.json();
+      if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+      return data.choices?.[0]?.message?.content || '';
+    }
+  } catch (err) {
+    const clientKey = window.GROQ_API_KEY || (typeof localStorage !== 'undefined' && localStorage.getItem('GROQ_API_KEY'));
+    if (clientKey) {
+      const directResp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${clientKey}`
+        },
+        body: JSON.stringify({ model: modelName, max_tokens: maxTokens, messages })
+      });
+      const data = await directResp.json();
+      if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+      return data.choices?.[0]?.message?.content || '';
+    }
+    throw err;
+  }
+  throw new Error('API error: unable to reach Groq API serverless endpoint');
 }
 
 function buildSystemPrompt() {
