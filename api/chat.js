@@ -13,51 +13,62 @@ export default async function handler(req, res) {
 
     const payload = req.body || {};
 
-    // List of decommissioned or unsupported Groq models to automatically upgrade
-    const DECOMMISSIONED_MODELS = [
-      'gemma2-9b-it',
-      'gemma-7b-it',
-      'llama2-70b-4096',
-      'llama3-8b-8192',
+    // List of candidate models to fallback to in order if requested model does not exist or lacks access
+    const FALLBACK_MODELS = [
+      'llama-3.3-70b-versatile',
+      'llama-3.1-70b-versatile',
+      'llama-3.1-8b-instant',
+      'llama-3.3-70b-specdec',
       'llama3-70b-8192',
-      'mixtral-8x7b-32768'
+      'llama3-8b-8192',
+      'gemma2-9b-it'
     ];
 
-    const defaultModel = process.env.GROQ_MODEL || 'llama-3.3-70b-versatile';
+    const requestedModel = payload.model || process.env.GROQ_MODEL;
+    const modelsToTry = [requestedModel, ...FALLBACK_MODELS].filter(Boolean);
+    const uniqueModels = [...new Set(modelsToTry)];
 
-    if (!payload.model || DECOMMISSIONED_MODELS.includes(String(payload.model).toLowerCase())) {
-      payload.model = defaultModel;
-    }
+    let lastData = null;
+    let lastStatus = 500;
 
-    let response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
-      },
-      body: JSON.stringify(payload)
-    });
-
-    let data = await response.json();
-
-    // If Groq returns a decommissioned model error, retry once with the fallback model
-    if (data.error && data.error.message && data.error.message.includes('decommissioned')) {
-      payload.model = defaultModel;
-      response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    for (const model of uniqueModels) {
+      const currentPayload = { ...payload, model };
+      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${apiKey}`
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(currentPayload)
       });
-      data = await response.json();
+
+      const data = await response.json();
+
+      if (response.ok && !data.error) {
+        return res.status(200).json(data);
+      }
+
+      lastData = data;
+      lastStatus = response.status;
+
+      const errMsg = (data.error?.message || '').toLowerCase();
+      const isModelError = errMsg.includes('model') || 
+                           errMsg.includes('decommissioned') || 
+                           errMsg.includes('exist') || 
+                           errMsg.includes('access') ||
+                           data.error?.code === 'model_not_found';
+
+      if (!isModelError) {
+        // Stop retrying if the error is non-model related (e.g. invalid API key)
+        break;
+      }
     }
 
-    return res.status(200).json(data);
+    return res.status(lastStatus).json(lastData || { error: { message: 'Failed to communicate with AI model.' } });
 
   } catch (err) {
     return res.status(500).json({ error: { message: err.message } });
   }
 }
+
 

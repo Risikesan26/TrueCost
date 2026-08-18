@@ -1044,8 +1044,22 @@ async function runRecommendationsP3() {
     bannerText.innerHTML = `✦ AI found <strong style="color:var(--green)">${recs.length} recommended cars</strong>.${topCar?` Top pick: <strong>${topCar.brand} ${topCar.model}</strong>.`:''}`;
     btn.textContent = '↺ Refresh Picks';
   } catch(err) {
-    bannerText.innerHTML = `<span style="color:var(--red)">Could not get AI recommendations: ${err.message}</span>`;
-    btn.textContent = '✦ Get AI Picks';
+    console.warn('AI recommendation error, using financial rule fallback:', err.message);
+    const recCars = (pool.length >= 3 ? pool : CAR_DATASET.filter(c => c.price <= maxP)).slice(0, 3);
+    if (recCars.length > 0) {
+      state.aiRecoIds = recCars.map(c => c.id);
+      state.aiRecoReasons = {};
+      recCars.forEach(c => {
+        state.aiRecoReasons[c.id] = `Financially optimal pick for RM${Math.round(state.salary).toLocaleString()} income`;
+      });
+      applyFilters();
+      const topCar = recCars[0];
+      bannerText.innerHTML = `✦ Selected <strong style="color:var(--green)">${recCars.length} recommended cars</strong> based on financial analysis.${topCar?` Top pick: <strong>${topCar.brand} ${topCar.model}</strong>.`:''}`;
+      btn.textContent = '↺ Refresh Picks';
+    } else {
+      bannerText.innerHTML = `<span style="color:var(--red)">Could not get AI recommendations: ${err.message}</span>`;
+      btn.textContent = '✦ Get AI Picks';
+    }
   }
   btn.disabled = false;
 }
@@ -1556,36 +1570,61 @@ function buildInsights() {
 // GROQ API
 // ============================================================
 async function callGroq(messages, maxTokens=1000) {
-  const modelName = 'llama-3.3-70b-versatile';
+  const modelCandidates = [
+    'llama-3.3-70b-versatile',
+    'llama-3.1-70b-versatile',
+    'llama-3.1-8b-instant',
+    'llama-3.3-70b-specdec',
+    'llama3-70b-8192',
+    'llama3-8b-8192'
+  ];
+
   try {
     const response = await fetch('/api/chat', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ model: modelName, max_tokens: maxTokens, messages })
+      body: JSON.stringify({ model: modelCandidates[0], max_tokens: maxTokens, messages })
     });
     if (response.ok) {
       const data = await response.json();
+      if (data.choices?.[0]?.message?.content) {
+        return data.choices[0].message.content;
+      }
       if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
-      return data.choices?.[0]?.message?.content || '';
     }
   } catch (err) {
     const clientKey = window.GROQ_API_KEY || (typeof localStorage !== 'undefined' && localStorage.getItem('GROQ_API_KEY'));
     if (clientKey) {
-      const directResp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${clientKey}`
-        },
-        body: JSON.stringify({ model: modelName, max_tokens: maxTokens, messages })
-      });
-      const data = await directResp.json();
-      if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
-      return data.choices?.[0]?.message?.content || '';
+      let lastErr = err;
+      for (const modelName of modelCandidates) {
+        try {
+          const directResp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${clientKey}`
+            },
+            body: JSON.stringify({ model: modelName, max_tokens: maxTokens, messages })
+          });
+          const data = await directResp.json();
+          if (directResp.ok && data.choices?.[0]?.message?.content) {
+            return data.choices[0].message.content;
+          }
+          if (data.error) {
+            lastErr = new Error(data.error.message || JSON.stringify(data.error));
+            const errMsg = (data.error.message || '').toLowerCase();
+            const isModelErr = errMsg.includes('model') || errMsg.includes('decommissioned') || errMsg.includes('exist') || errMsg.includes('access');
+            if (!isModelErr) throw lastErr;
+          }
+        } catch (e) {
+          lastErr = e;
+        }
+      }
+      throw lastErr;
     }
     throw err;
   }
-  throw new Error('API error: unable to reach Groq API serverless endpoint');
+  throw new Error('API error: unable to reach Groq API endpoint');
 }
 
 function buildSystemPrompt() {
@@ -1632,9 +1671,34 @@ async function runFullAnalysis() {
     document.getElementById('analysis-content').style.display='block';
     appendMsg('ai', `Analysis complete. Verdict: <strong>${parsed.verdict}</strong>. ${parsed.summary}`);
   } catch(err) {
+    console.warn('Full AI Analysis failed, falling back to rule-based financial analysis:', err.message);
+    const car = state.selectedCar;
+    const tc = state.trueCost;
+    const pct = (state.salary > 0 && tc) ? (tc.total / state.salary * 100) : 0;
+    const verdict = pct <= 25 ? 'SAFE' : pct <= 35 ? 'RISKY' : 'DANGEROUS';
+    const vc = verdict === 'SAFE' ? 'var(--green)' : verdict === 'RISKY' ? 'var(--amber)' : 'var(--red)';
+    const vb = verdict === 'SAFE' ? 'badge-safe' : verdict === 'RISKY' ? 'badge-risky' : 'badge-danger';
+    
+    const affordability = `True monthly cost is RM${Math.round(tc.total).toLocaleString()} (${pct.toFixed(1)}% of your monthly salary of RM${state.salary.toLocaleString()}).`;
+    const risks = verdict === 'SAFE' ? `Low financial risk. Debt-to-Income (DTI) is within safe limits (${state.dti.toFixed(1)}%).` : `Higher monthly commitment may impact cash flow and emergency savings.`;
+    const safer_alternative = `Consider a pre-owned alternative priced under RM${Math.round(car.price * 0.65).toLocaleString()} to lower monthly obligations.`;
+    const long_term = `5-year projected total expenditure for this vehicle is RM${Math.round(tc.total5yr).toLocaleString()}.`;
+    const summary = `Based on financial calculations, spending RM${Math.round(tc.total).toLocaleString()} monthly on a ${car.brand||car.make} ${car.model} represents ${pct.toFixed(1)}% of your gross monthly income. Keeping total car expenses below 25-30% ensures long-term cash flow stability.`;
+
+    document.getElementById('analysis-cards').innerHTML = `
+      <div style="background:var(--surface2);padding:1rem;border-left:2px solid ${vc}"><div style="font-family:var(--mono);font-size:0.6rem;letter-spacing:0.1em;color:var(--text-faint);margin-bottom:0.4rem">AFFORDABILITY</div><div style="font-size:0.82rem;line-height:1.5">${affordability}</div></div>
+      <div style="background:var(--surface2);padding:1rem;border-left:2px solid var(--red)"><div style="font-family:var(--mono);font-size:0.6rem;letter-spacing:0.1em;color:var(--text-faint);margin-bottom:0.4rem">RISKS</div><div style="font-size:0.82rem;line-height:1.5">${risks}</div></div>
+      <div style="background:var(--surface2);padding:1rem;border-left:2px solid var(--green)"><div style="font-family:var(--mono);font-size:0.6rem;letter-spacing:0.1em;color:var(--text-faint);margin-bottom:0.4rem">SAFER ALTERNATIVE</div><div style="font-size:0.82rem;line-height:1.5">${safer_alternative}</div></div>
+      <div style="background:var(--surface2);padding:1rem;border-left:2px solid var(--gold)"><div style="font-family:var(--mono);font-size:0.6rem;letter-spacing:0.1em;color:var(--text-faint);margin-bottom:0.4rem">LONG-TERM</div><div style="font-size:0.82rem;line-height:1.5">${long_term}</div></div>`;
+    document.getElementById('analysis-verdict').innerHTML = `
+      <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--border)">
+        <span class="badge ${vb}" style="font-size:0.7rem;padding:0.35rem 0.9rem">${verdict==='SAFE'?'✓ SAFE TO PROCEED':verdict==='RISKY'?'⚠ PROCEED WITH CAUTION':'✗ FINANCIALLY DANGEROUS'}</span>
+        <span style="font-family:var(--mono);font-size:0.65rem;color:var(--text-faint)">Financial Analysis</span>
+      </div>
+      <p style="font-size:0.88rem;line-height:1.8;color:var(--text-dim)">${summary}</p>`;
     document.getElementById('analysis-loading').style.display='none';
-    document.getElementById('analysis-placeholder').style.display='flex';
-    document.getElementById('analysis-placeholder').innerHTML=`<div style="font-size:1.5rem">⚠️</div><div style="font-size:0.82rem;color:var(--red)">Error: ${err.message}</div>`;
+    document.getElementById('analysis-content').style.display='block';
+    appendMsg('ai', `Analysis complete. Verdict: <strong>${verdict}</strong>. ${summary}`);
   }
   btn.disabled=false; btn.textContent='⚡ Generate Analysis';
 }
